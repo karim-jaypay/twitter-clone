@@ -24,8 +24,8 @@ function App() {
       <Route path="/profile">
         <Profile/>
       </Route>
-      <Route path="/home/:name,:picture" component={Userprofile}>
-        
+      <Route path="/userprofile/:id">
+        <Protected Cmp={Userprofile}/>
       </Route>
       <Route path="/">
         <Protected Cmp={Home}/>

@@ -1,30 +1,14 @@
 import Header from './header';
 import {useEffect, useState} from 'react';
-//import React from 'react';
-//import props from 'prop-types';
+import {withRouter} from 'react-router-dom';
 
 function Userprofile(props) {
-    
 
-   // let user = JSON.parse(localStorage.getItem('user-info'))
-    //const [file,setFile]=useState("");
- // const {user} = props.location.aboutProps;
  const name = props.match.params.name;
   
-
-// const picture = props.match.params.picture;
- //.warn(picture);
  const [data,setData]=useState([]);
  useEffect(async ()=> {
-     let item={name};
-    let result = await fetch("http://localhost:8000/api/getuser",{
-            method:'POST',
-            body:JSON.stringify(item),
-            headers:{
-                "Content-Type":'application/json',
-                "Accept":'application/json'
-            }
-        })
+    let result = await fetch("http://localhost:8000/api/getuser/"+props.match.params.id);
      result = await result.json();
      setData(result);
  },[])
@@ -43,4 +27,4 @@ function Userprofile(props) {
     )
 }
 
-export default Userprofile;
+export default withRouter(Userprofile);
