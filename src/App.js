@@ -9,6 +9,7 @@ import Home from './Home';
 import Protected from './Protected';
 import Profile from './profile';
 import Userprofile from './userprofile';
+import Search from './Search';
 function App() {
   return (
     <div className="App">
@@ -26,6 +27,9 @@ function App() {
       </Route>
       <Route path="/userprofile/:id">
         <Protected Cmp={Userprofile}/>
+      </Route>
+      <Route path="/Search">
+        <Protected Cmp={Search}/>
       </Route>
       <Route path="/">
         <Protected Cmp={Home}/>
