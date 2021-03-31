@@ -4,8 +4,10 @@ function Header(){
   let user = JSON.parse(localStorage.getItem('user-info'))
   const history = useHistory();
   function logout(){
+   
     localStorage.clear();
     history.push('/register');
+    
   }
   return(
         <div>

@@ -3,8 +3,6 @@ import {useEffect, useState} from 'react';
 import { useHistory, Link } from 'react-router-dom';
 function Home() {
     const history = useHistory();
-
-
     let user = JSON.parse(localStorage.getItem('user-info'));
     const name = user.name;
     const tweetid = user.id;
@@ -35,7 +33,7 @@ function Home() {
               method:'DELETE'  
     });
     result = await result.json();
-console.warn(result);
+//console.warn(result);
 gettweets();
     }
     async function gettweets()
@@ -69,7 +67,7 @@ gettweets();
                             <img src={"http://localhost:8000/"+item.picture} width="30" height="30" style={{borderRadius:10}}/>
                     </Link>
                             :
-                    <Link to={"userprofile/"+item.tweet_id}>
+                    <Link to={"userprofile/"+item.tweet_id} >
                     <img src={"http://localhost:8000/"+item.picture} width="30" height="30" style={{borderRadius:10}}/>
                     </Link>
                       }
