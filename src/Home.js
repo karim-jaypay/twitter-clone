@@ -8,7 +8,9 @@ function Home() {
     const tweetid = user.id;
     const [text,setText]=useState("");
     const [data,setData] = useState([]);
+    const [usernotfollowed,setUsernotfollowed] = useState([]);
     useEffect( ()=>{
+        getuser_notfollowed();
        gettweets();
     },[])
    // console.warn("result2",data);
@@ -38,10 +40,17 @@ gettweets();
     }
     async function gettweets()
     {
-        let result2 = await fetch("http://localhost:8000/api/gettweets");
+        let result2 = await fetch("http://localhost:8000/api/gettweets/"+user.id);
         result2 = await result2.json();
         setData(result2);
     }
+    async function getuser_notfollowed(id)
+{
+    let result = await fetch("http://localhost:8000/api/getuser_notfollowed/"+user.id);
+        result = await result.json();
+        setUsernotfollowed(result);
+
+}
     return(
         
         <div>
@@ -57,10 +66,28 @@ gettweets();
             <button onClick={tweet} class="btn btn-primary">Tweet</button>
             </div>
             <hr/>
-            <div>
+            <div style={{}}>
+                <div style={{position:'absolute',left:'auto',border:'0.5px solid lightgrey', width:'23%',height:'100%',backgroundColor:'white',borderTopColor:'white'}}>
+                    <h4 style={{color:'grey'}}>Who to follow</h4>
+                    {
+                        usernotfollowed.map((item)=>
+                        <div>
+                            <div style={{display:'flex',justifyContent:'center',marginTop:30}}>
+                            <Link to={"userprofile/"+item.id} >
+                            <img src={"http://localhost:8000/"+item.profile_picture} width="30" height="30" style={{borderRadius:10}}/>
+                            </Link>
+                            <p style={{marginLeft:10,fontWeight:'bold'}}>{item.name}</p>
+
+                            </div>
+
+                        </div>
+                        )
+                        
+                    }
+                </div>
                 {
                     data.map((item)=>
-                    <div>
+                    <div style={{}}>
                     <div style={{display:'flex',justifyContent:'center'}}>
                         { user.name == item.name ?
                         <Link to="/profile">
@@ -81,12 +108,11 @@ gettweets();
                     }
                     <br/>
                     </div>
-                    <div style={{//border:'1px solid lightgrey',
-                    width:'30%',margin:'auto',borderRadius:7}}>
-                    <p style={{marginLeft:10}}>{item.text}</p>
+                    <div style={{}}>
+                    <p style={{marginLeft:30}}>{item.text}</p>
                     </div>
-                    <br/>
-                    <hr/>
+                    
+                    <hr style={{width:'200%'}}/>
                     </div>
                     
                     )
