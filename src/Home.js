@@ -1,22 +1,36 @@
 import Header from './header';
 import {useEffect, useState} from 'react';
 import { useHistory, Link } from 'react-router-dom';
+import {Button} from 'react-bootstrap';
+import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
+
+
 function Home() {
     const history = useHistory();
     let user = JSON.parse(localStorage.getItem('user-info'));
     const name = user.name;
     const tweetid = user.id;
     const [text,setText]=useState("");
+    //const [textcomment,setTextcomment]=useState("");
+
     const [data,setData] = useState([]);
     const [usernotfollowed,setUsernotfollowed] = useState([]);
+    const [inputHidden,setinputHidden]= useState({});
+
+    const [isliked,setisLiked]=useState({});
+    const [getComment,setgetComment]=useState([]);
+
+
+
     useEffect( ()=>{
+        getlike();
         getuser_notfollowed();
        gettweets();
     },[])
-   // console.warn("result2",data);
-   async function tweet(){
-       // console.warn(name);
-        let item={tweetid,name,text}
+
+   async function tweet()
+   {
+    let item={tweetid,name,text}
        let result = await fetch("http://localhost:8000/api/tweet",{
             method:'POST',
             body:JSON.stringify(item),
@@ -25,34 +39,109 @@ function Home() {
                 "Accept":'application/json'
             }
         })
-       // alert("tweet uploaded!");
-       // history.go(0);
        gettweets();
     }
+
     async function deletetweet(id)
     {
             let result = await fetch("http://localhost:8000/api/delete/"+id,{
               method:'DELETE'  
-    });
-    result = await result.json();
-//console.warn(result);
-gettweets();
+            });
+            result = await result.json();
+
+            gettweets();
     }
+
     async function gettweets()
     {
         let result2 = await fetch("http://localhost:8000/api/gettweets/"+user.id);
         result2 = await result2.json();
         setData(result2);
     }
-    async function getuser_notfollowed(id)
-{
+
+    async function getuser_notfollowed()
+    {
     let result = await fetch("http://localhost:8000/api/getuser_notfollowed/"+user.id);
         result = await result.json();
         setUsernotfollowed(result);
 
-}
-    return(
+    }
+
+    async function like(tweet_id)
+    {
+        let item ={tweet_id};
+        let result = await fetch("http://localhost:8000/api/like/"+user.id,{
+            method:'POST',
+            body:JSON.stringify(item),
+            headers:{
+                "Content-Type":'application/json',
+                "Accept":'application/json'
+            }
+        });
         
+        getlike();
+        gettweets();
+    
+    }
+    async function getlike()
+    {
+        let result = await fetch("http://localhost:8000/api/getlike/"+user.id);
+        result = await result.json();
+        setisLiked(result);
+       
+    }
+    async function deletelike(tweet_id)
+    {
+        let result = await fetch("http://localhost:8000/api/deletelike/"+user.id+"/"+tweet_id,{
+              method:'DELETE'  
+            });
+            result = await result.json();
+
+            getlike();
+            gettweets();
+    }
+    async function comment(tweet_id)
+    {
+        let item = {text};
+        let result = await fetch("http://localhost:8000/api/comment/"+tweet_id+"/"+user.id,{
+            method:'POST',
+            headers:{
+                "Content-Type":"application/json",
+                "Accept":"application/json"
+            },
+            body:JSON.stringify(item)
+        });
+        result = await result.json();
+        gettweets();
+    }
+    async function getcomment(tweet_id)
+    {
+        let result = await fetch("http://localhost:8000/api/getcomment/"+tweet_id);
+        result = await result.json();
+        setgetComment(result);
+
+    }
+    async function deletecomment(tweet_id)
+    {
+        let result = await fetch("http://localhost:8000/api/deletecomment/"+user.id+"/"+tweet_id,{
+              method:'DELETE'  
+            });
+            result = await result.json();
+
+           // getlike();
+            gettweets();
+    }
+     function toggleinput(id)
+    {
+      //  setinputHidden(!inputHidden);
+      setinputHidden(previnputHidden => ({
+          ...previnputHidden,
+          [id]: !previnputHidden[id]
+      }));
+    }
+    //const inputClass = inputHidden ? 'hide' : '';
+console.warn(getComment);
+    return(
         <div>
             <Header />
             <div style={{marginTop:10}}>
@@ -111,8 +200,65 @@ gettweets();
                     <div style={{}}>
                     <p style={{marginLeft:30}}>{item.text}</p>
                     </div>
+                    <div style={{}}>
+                        <div style={{display:'inline'}}>
+                            <Button variant="light" size='sm' onClick={()=>{toggleinput(item.id);getcomment(item.id);}}>
+                            <IoChatbubbleEllipsesOutline style={{marginBottom:5}}/>
+                            <span>{item.comments}</span>
+                                </Button>
+
+                        </div>
+                        { 
+                        //item.id == 
+                        isliked.indexOf(item.id) >-1 == true ?
+                        <Button variant="light" size='sm' onClick={()=>deletelike(item.id)}>
+                            <div style={{color:'red',marginBottom:5}}>
+                    <IoHeart />
+                    </div>
+                    </Button>
+                    :
+                    <Button variant="light" size='sm' onClick={()=>like(item.id)}>
+                    <IoHeartOutline style={{color:'red',marginBottom:5}} />
+                    </Button>
+                     }
+                    <span style={{marginLeft:10}}>{item.likes}</span>
+                        
+                    </div>
+                    {  inputHidden[item.id] ?
+                    <div>
+                 {   getComment.map((itemm)=>
+                    item.id == itemm.tweet_id ?
+                 <div>
+                     <p style={{color:'grey',marginTop:5,marginRight:100}}>Replies:</p>
+                    <img src={"http://localhost:8000/"+getComment[0].profile_picture} width="30" height="30" style={{borderRadius:10}}/>
+
+                     <span style={{fontWeight:'bold',marginLeft:5}}>{getComment[0].name}</span>
+                     {
+                         user.name == itemm.name ?
+                         <div style={{position:'absolute',right:20}}><span onClick={()=>deletecomment(item.id)} style={{color:'red',backgroundColor:'white',borderRadius:5,padding:5,cursor: 'pointer'}}>Delete</span></div>
+                             :
+                             <></>
+                     }
+                    <p>{getComment[0].text}</p>
+                    </div>
+                    : null
+                 )}
+                 {//   <></>
+                   //  ) }
+                
+                    // {inputHidden[item.id] ?
+                }
+                    <input type="text" id={item} onChange={(e)=>setText(e.target.value)}/>
+                
                     
+                   
+                
+                    <Button variant="light" onClick={()=>{comment(item.id);}} className="btn btn-primary"><span style={{color:'#0693E3'}}>reply</span></Button> 
+                    </div>
+                    : null
+            }
                     <hr style={{width:'200%'}}/>
+                   
                     </div>
                     
                     )
