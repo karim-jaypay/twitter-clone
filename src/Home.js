@@ -121,9 +121,9 @@ function Home() {
         setgetComment(result);
 
     }
-    async function deletecomment(tweet_id)
+    async function deletecomment(id)
     {
-        let result = await fetch("http://localhost:8000/api/deletecomment/"+user.id+"/"+tweet_id,{
+        let result = await fetch("http://localhost:8000/api/deletecomment/"+id,{
               method:'DELETE'  
             });
             result = await result.json();
@@ -140,7 +140,7 @@ function Home() {
       }));
     }
     //const inputClass = inputHidden ? 'hide' : '';
-console.warn(getComment);
+//console.warn(getComment);
     return(
         <div>
             <Header />
@@ -226,20 +226,21 @@ console.warn(getComment);
                     </div>
                     {  inputHidden[item.id] ?
                     <div>
-                 {   getComment.map((itemm)=>
+                        <p style={{color:'grey',marginTop:5,marginRight:100}}>Replies:</p>
+                 {   getComment.map((itemm, index)=>
                     item.id == itemm.tweet_id ?
                  <div>
-                     <p style={{color:'grey',marginTop:5,marginRight:100}}>Replies:</p>
-                    <img src={"http://localhost:8000/"+getComment[0].profile_picture} width="30" height="30" style={{borderRadius:10}}/>
+                     
+                    <img src={"http://localhost:8000/"+getComment[index].profile_picture} width="30" height="30" style={{borderRadius:10}}/>
 
-                     <span style={{fontWeight:'bold',marginLeft:5}}>{getComment[0].name}</span>
+                     <span style={{fontWeight:'bold',marginLeft:5}}>{getComment[index].name}</span>
                      {
                          user.name == itemm.name ?
-                         <div style={{position:'absolute',right:20}}><span onClick={()=>deletecomment(item.id)} style={{color:'red',backgroundColor:'white',borderRadius:5,padding:5,cursor: 'pointer'}}>Delete</span></div>
+                         <div style={{position:'absolute',right:20}}><span onClick={()=>deletecomment(itemm.id)} style={{color:'red',backgroundColor:'white',borderRadius:5,padding:5,cursor: 'pointer'}}>Delete</span></div>
                              :
                              <></>
                      }
-                    <p>{getComment[0].text}</p>
+                    <p>{getComment[index].text}</p>
                     </div>
                     : null
                  )}
