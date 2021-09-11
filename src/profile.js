@@ -2,7 +2,7 @@ import Header from './Components/Header/Header';
 import {useEffect, useState} from 'react';
 function Profile() {
     
-    const [toggleState, setToggleState] = useState(1);
+   /*  const [toggleState, setToggleState] = useState(1);
 
   const toggleTab = (index) => {
     setToggleState(index);
@@ -53,11 +53,11 @@ function Profile() {
         let result2 = await fetch("http://localhost:8000/api/getowncomments/"+user.id);
         result2 = await result2.json();
         setDatacomments(result2);
-    }
+    } */
     return(
         
         <div>
-            <Header />
+            {/* <Header />
             <div style={{marginTop:10}}>
             <h5 >{user.name}'s Profile</h5>
             
@@ -143,7 +143,7 @@ function Profile() {
                     )}
         </div>
       </div>
-    </div>
+    </div> */}
         </div>
     )
 }

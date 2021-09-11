@@ -18,7 +18,7 @@ const Home = lazy(() => import('./Pages/Home/Home.js'))
 
 
 export default function App() {
-  console.log(getSessionInfo('user'))
+  console.log(getSessionInfo('LoggedIn'))
   const history = useHistory();
 
   const Auth = ({ component: Component, ...rest }) => {
@@ -26,20 +26,21 @@ export default function App() {
         <Route
             {...rest}
             render={(props) =>
-                getSessionInfo('user') ? (
+                 getSessionInfo('LoggedIn') ? (
                   <>
                   <div className="d-flex">
-                    <Sidebar />
+                    <Sidebar {...props}/>
                     <div className="w-50">
                       <Header />
                       <Component {...props} />
                     </div>
+                    <div style={{width:'41%',borderLeft:'1px solid #eff3f4'}}></div>
                   </div>
                         
                   </>
-                ) : (
+                )  : (
                         <Redirect to="/welcome" />
-                    )}
+                    ) }
         />
         
     );
@@ -49,18 +50,28 @@ export default function App() {
   <Router history={history}>
     <Suspense fallback={''}>
       <Switch>
+
     
-      <Auth path="/home" component={Home}/>
     
-    {!getSessionInfo('user') &&
+
+      {getSessionInfo('LoggedIn') === undefined ?
+      <>
     <Switch>
       <Route path="/login" component={Login}/>
       <Route path="/welcome" component={Welcome} />
-      <Redirect to="/welcome" />
     </Switch>
-    }
+    <Redirect to="/welcome" />
+    </>
+    :
+    <>
+    <Switch>
+      <Auth path="/home" component={Home}/>
+      <Auth path="/:username" component={Profile}/>
+    </Switch>
     <Redirect to="/home"/>
-      
+    </>
+    }
+     
 
       {/* <Route path="/profile">
         <Profile/>
@@ -75,6 +86,7 @@ export default function App() {
         <Protected Cmp={Home}/>
       </Route> */}
       </Switch>
+      
       </Suspense>
       </Router>
   )

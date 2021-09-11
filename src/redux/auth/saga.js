@@ -9,10 +9,12 @@ import moment from 'moment'
 
 import { setSessionInfo } from "../../storage"
 
+axios.defaults.withCredentials = true
+
 /* LOGIN */
 
   const loginWithEmailPasswordAsync = async (email, password) =>
-  await axios.post("http://localhost:5000/register/login", { email, password })
+  await axios.post("http://localhost:5000/login", { email, password })
     .then((res) => res.data)
     .catch((error) => error.response.data);
 
@@ -21,10 +23,10 @@ function* loginWithEmailPassword({ payload }) {
   try {
     const loginUser = yield call(loginWithEmailPasswordAsync, email, password);
     if (!loginUser.message) {
-      setSessionInfo({ name: 'user', val: loginUser.user });
-      setSessionInfo({ name: 'token', val: 'Bearer '+ loginUser.token });
+      setSessionInfo({ name: 'LoggedIn', val: loginUser.LoggedIn });
+      /*setSessionInfo({ name: 'token', val: 'Bearer '+ loginUser.token }); */
       yield put(loginUserSuccess('success'));
-      history.replace('/home')
+      history.go(0)
 
     } else {
       yield put(loginUserError(loginUser.message));

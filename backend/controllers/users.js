@@ -19,9 +19,8 @@ const Joi = JoiBase.extend(JoiDate)
             if(user){
                 bcrypt.compare( req.body.password, user.password, function(err, resp) {
                     if(resp){
-                        jwt.sign({resp}, 'secretkey', (err, token) => {
-                            res.status(200).json({user, token});
-                        })
+                        req.session.user = resp
+                        res.status(200).json({loggedIn: true });
                     } else res.send({message: 'incorrect username or password'})
                 });
             } else {
@@ -92,14 +91,14 @@ export const createUser = async (req, res) => {
         await UserMessage.findOne({email:user.email}, function(error, user){
             if(user){
                 if(user.username)
-                res.send({ error: "Account already created" });
+                res.status(404).send({ error: "Account already created" });
                 else {
                 /* newUser.save(); */
-                res.status(201).json(newUser);
+                res.status(200).json(newUser);
                 }
             } else {
                 newUser.save();
-                res.status(201).json(newUser);
+                res.status(200).json(newUser);
             }
         })
         
