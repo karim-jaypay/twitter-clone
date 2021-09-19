@@ -1,4 +1,4 @@
-import React , {useState,useEffect} from 'react';
+import React , {useState,useEffect, useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {Button} from 'react-bootstrap';
 
@@ -11,6 +11,7 @@ import logo from '../../public/logo.png'
 
 import { TextField } from '@material-ui/core';
 import { getSessionInfo } from '../../storage';
+import { UserContext } from '../../Context/user';
 
 export default function Login(props) {
 
@@ -19,17 +20,23 @@ export default function Login(props) {
 
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
+
+    const { token, setToken } = useContext(UserContext)
     
     const login = () => dispatch(loginUser({email, password, history}))
       
 
     const result = useSelector(state => state.auth)
-    /* useEffect(()=>{
-        if(localStorage.getItem("user-info"))
+
+     useEffect(()=>{
+        if(result.message && result.message.success)
         {
-            history.push("/Home");
+            setToken(oldValues => {
+                return { ...oldValues, token: result.message.token }
+            })
         }
-    },[]) */
+    },[result.message])
+
     /* async function login(){
         let item={email,password};
         try{
@@ -62,7 +69,7 @@ export default function Login(props) {
                 <div className="mb-4">
                 <TextField className="input-form" label="Password" variant="outlined" type="password" onChange={(e)=>setPassword(e.target.value)} />
                 </div>
-                {result.message &&
+                {result.message && result.message !== 'success' &&
                     <p style={{color:'red',marginTop:20}}>Incorrect username or password</p>
                 }
                 <Button className="d-block py-3" style={{background:'#1da1f2', width:'400px',fontWeight:'bold', borderRadius:'30px'}} onClick={login}>Login</Button>

@@ -1,20 +1,17 @@
+import axios from 'axios'
+import moment from 'moment'
+
 import { call, put, takeLatest, all, } from "redux-saga/effects"
 
 import { LOGIN_USER, REGISTER_USER } from "../actions"
 
 import { loginUserSuccess, loginUserError, registerUserSuccess, registerUserError} from './actions'
 
-import axios from 'axios'
-import moment from 'moment'
-
-import { setSessionInfo } from "../../storage"
-
-axios.defaults.withCredentials = true
-
 /* LOGIN */
 
+
   const loginWithEmailPasswordAsync = async (email, password) =>
-  await axios.post("http://localhost:5000/login", { email, password })
+  await axios.post("http://localhost:5000/register/login", { email, password, withCredentials: true })
     .then((res) => res.data)
     .catch((error) => error.response.data);
 
@@ -23,8 +20,7 @@ function* loginWithEmailPassword({ payload }) {
   try {
     const loginUser = yield call(loginWithEmailPasswordAsync, email, password);
     if (!loginUser.message) {
-      setSessionInfo({ name: 'LoggedIn', val: loginUser.LoggedIn });
-      /*setSessionInfo({ name: 'token', val: 'Bearer '+ loginUser.token }); */
+      localStorage.setItem( 'ui', loginUser.data );
       yield put(loginUserSuccess('success'));
       history.go(0)
 

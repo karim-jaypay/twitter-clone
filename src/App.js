@@ -1,5 +1,7 @@
-import React, {Suspense, lazy} from 'react'
+import React, {Suspense, lazy, useContext, useCallback, useEffect } from 'react'
 import {BrowserRouter as Router,Route,Switch, useHistory, Redirect} from 'react-router-dom';
+
+import axios from 'axios'
 
 import Profile from './profile';
 import Userprofile from './userprofile';
@@ -8,8 +10,10 @@ import Search from './Search';
 import Sidebar from './Components/Sidebar/Sidebar';
 import Header from './Components/Header/Header';
 
-import { getSessionInfo } from './storage';
+import { getLocalStorage } from './storage';
+import { TweetLoader } from './Context/loader';
 
+import { Logout } from './Pages/Logout/Logout'
 
 const Welcome = lazy(() => import('./Welcome'));
 const Login = lazy(() => import('./Pages/Login/Login.js'));
@@ -17,16 +21,45 @@ const Home = lazy(() => import('./Pages/Home/Home.js'))
 
 
 
+
+
 export default function App() {
-  console.log(getSessionInfo('LoggedIn'))
+
   const history = useHistory();
+
+  const userInfo = getLocalStorage('ui')
+  
+  console.log(userInfo)
+
+  const verifyUser = useCallback(() => {
+    axios.post("http://localhost:5000/register/refreshToken", {
+      withCredentials: true,
+    }).then(response => {
+      if (response.data.success) {
+        localStorage.setItem('ui', response.data.data)
+      }
+       else if(response.success) {
+        localStorage.setItem('ui', response.data)
+      } else {
+        localStorage.clear()
+      }
+      // call refreshToken every 5 minutes to renew the authentication token.
+      setTimeout(verifyUser, 5 * 60 * 1000)
+    })
+  }, [])
+
+  useEffect(() => {
+    verifyUser()
+  }, [verifyUser])
+
+  /* console.log(token) */
 
   const Auth = ({ component: Component, ...rest }) => {
     return (
         <Route
             {...rest}
             render={(props) =>
-                 getSessionInfo('LoggedIn') ? (
+                 userInfo ? (
                   <>
                   <div className="d-flex">
                     <Sidebar {...props}/>
@@ -34,7 +67,9 @@ export default function App() {
                       <Header />
                       <Component {...props} />
                     </div>
-                    <div style={{width:'41%',borderLeft:'1px solid #eff3f4'}}></div>
+                    <div style={{width:'41%',borderLeft:'1px solid #eff3f4'}}>
+                      <Logout {...props} />
+                    </div>
                   </div>
                         
                   </>
@@ -51,10 +86,7 @@ export default function App() {
     <Suspense fallback={''}>
       <Switch>
 
-    
-    
-
-      {getSessionInfo('LoggedIn') === undefined ?
+      {!userInfo ?
       <>
     <Switch>
       <Route path="/login" component={Login}/>
@@ -63,13 +95,13 @@ export default function App() {
     <Redirect to="/welcome" />
     </>
     :
-    <>
-    <Switch>
-      <Auth path="/home" component={Home}/>
-      <Auth path="/:username" component={Profile}/>
-    </Switch>
-    <Redirect to="/home"/>
-    </>
+    <TweetLoader>
+        <Switch>
+          <Auth path="/home" component={Home}/>
+          <Auth path="/:username" component={Profile}/>
+        </Switch>
+      <Redirect to="/home"/>
+    </TweetLoader>
     }
      
 

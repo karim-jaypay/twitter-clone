@@ -7,8 +7,6 @@ export const createTweet = async (req, res) => {
 
     const data = req.body
     const tweet = new tweets(data)
-
-    console.log(data)
     
     try {
         await UserMessage.findOne({
@@ -19,7 +17,7 @@ export const createTweet = async (req, res) => {
             if(user){
 
                 tweet.save()
-                res.status(200)
+                res.status(200).json({message: 'tweet sent'})
             } else res.send({message: 'user not found'})
             }
         );

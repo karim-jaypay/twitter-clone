@@ -9,7 +9,7 @@ import user from '../../public/user.svg'
 import feather from '../../public/feather.svg'
 import profile_picture from '../../public/default.png'
 
-import { getSessionInfo } from '../../storage'
+import { getLocalStorage } from '../../storage'
 
 export default function Sidebar(props) {
 
@@ -20,7 +20,7 @@ export default function Sidebar(props) {
                 <img className="slideimage slidepng" src={logo} alt="home"/>
                 <img className="slideimage slidepng" src={home} alt="home"/>
                 <img className="slideimage slidesvg" src={explore} alt="explore"/>
-                <div className="slideimage mb-0" onClick={() => history.push(`/${getSessionInfo('user').username}`)}>
+                <div className="slideimage mb-0" onClick={() => history.push(`/${getLocalStorage('ui').username}`)}>
                 <img className="slideimage slidesvg" src={user} alt="profile"/>
                 </div>
                 <div className="tweet-icon slideimage">

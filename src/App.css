@@ -1,3 +1,18 @@
+/*--- text area ---*/
+.text_area {
+  border: 0;
+  resize: none;
+  outline: none;
+  width: 100%
+}
+
+/*--- tweet button ---*/
+.tweet_btn {
+  background: #1da1f2 !important;
+  font-weight:  bold !important;
+  border-radius: 20px !important
+}
+
 /* HEADER */
 .header {
   border-left: 1px solid #eff3f4;

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import {Button} from 'react-bootstrap';
 import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
@@ -11,11 +11,36 @@ import poll from '../../public/poll.svg'
 import emoji from '../../public/happy.svg'
 import profile_picture from '../../public/default.png'
 
-
+import { createTweet } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
+import { tweetContext } from '../../Context/loader';
 
 export default function Home(props) {
 
-    const [data, setData] = useState('')
+    /* dispatch */
+    const dispatch = useDispatch()
+    /* get history */
+    const { history } = props
+    /* get contexts*/
+    const { loader, changeLoader } = useContext(tweetContext)
+    console.log(loader)
+
+    /* states */
+    const [tweet, setTweet] = useState()
+
+  
+    /* on change */
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setTweet({...tweet, [name]: value})
+
+    }
+
+    /* tweet button function */
+    const tweetAction = () => {
+        changeLoader(true)
+        dispatch(createTweet({user_id: user.id, text: tweet.text, history, changeLoader}))
+    }
     
    /*  if(!localStorage.getItem('user-info')) history.push('/register')
     let user = JSON.parse(localStorage.getItem('user-info'));
@@ -157,7 +182,7 @@ export default function Home(props) {
             <div className="tweet-box">
                 <div className="d-flex">
                     <img className="profile-image mb-auto" src={profile_picture} alt="profile picture" />
-                    <TextareaAutosize className="ml-2 mt-2" style={{border:'0',resize:'none', outline:'none',width:'100%'}} aria-label="empty textarea" placeholder="What's Happening" />
+                    <TextareaAutosize className="ml-2 mt-2 text_area" name="text" onChange={handleChange} aria-label="empty textarea" placeholder="What's Happening" />
                 
                 </div>
                 <div className="image-tweet">
@@ -167,7 +192,7 @@ export default function Home(props) {
                         <img width="20" height="20" src={poll} alt="upload poll" />
                         <img width="20" height="20" src={emoji} alt="upload emoji" />
                     </div>
-                    <Button className="d-block py-1 px-3 ml-auto" style={{background:'#1da1f2',fontWeight:'bold', borderRadius:'20px'}} disabled={!data ? true : false}>Tweet</Button>
+                    <Button className="d-block py-1 px-3 ml-auto tweet_btn" onClick={tweetAction} disabled={(!tweet || !tweet.text) ? true : false}>Tweet</Button>
 
                 </div>
             </div>

@@ -2,7 +2,8 @@ import UserMessage from '../models/UserMessage.js';
 import JoiBase from 'joi'
 import JoiDate from '@joi/date'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+
+import { getToken, COOKIE_OPTIONS, getRefreshToken } from '../authenticate.js'
 
 const Joi = JoiBase.extend(JoiDate)
 
@@ -10,6 +11,8 @@ const Joi = JoiBase.extend(JoiDate)
 
  export const Login = async (req, res) => {
 
+    const token = getToken({ _id: req.user._id })
+    const refreshToken = getRefreshToken({ _id: req.user._id })
     try {
         await UserMessage.findOne({$or: [{
             email: req.body.email
@@ -17,10 +20,19 @@ const Joi = JoiBase.extend(JoiDate)
             username: req.body.username
         }]}, function( error ,user) {
             if(user){
+                
                 bcrypt.compare( req.body.password, user.password, function(err, resp) {
                     if(resp){
-                        req.session.user = resp
-                        res.status(200).json({loggedIn: true });
+                        user.refreshToken.push({ refreshToken })
+                        user.save((err, user) => {
+                            if (err) {
+                              res.statusCode = 500
+                              res.send(err)
+                            } else {
+                              res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+                              res.send({ success: true, token })
+                            }
+                        })
                     } else res.send({message: 'incorrect username or password'})
                 });
             } else {
@@ -34,44 +46,11 @@ const Joi = JoiBase.extend(JoiDate)
     }
 } 
 
-// FORMAT OF TOKEN
-// Authorization: Bearer <access_token>
-
-// Verify Token
-export const verifyToken = (req, res, next) => {
-    // Get auth header value
-    const bearerHeader = req.headers['authorization']
-    // Check if bearer is undefined
-    if(typeof bearerHeader !== 'undefined') {
-        // Split at the space
-        const bearer = bearerHeader.split(" ")
-        // Get token from array
-        const bearerToken = bearer[1]
-        // Set the token
-        req.token = bearerToken
-        // Next middleware
-        next()
-
-    } else {
-        // Forbidden
-        res.sendStatus(403)
-    }
-
-}
-
-export const postt = (req,res) => {
-    jwt.verify(req.token, 'secretkey', (err, data) => {
-        if(err) {
-            res.sendStatus(403)
-        } else res.json({message: "post created..."})
-    })
-    
-}
 
 export const createUser = async (req, res) => {
     const schema = Joi.object({
         name: Joi.string()
-            .min(6)
+            .min(2)
             .required(),
         email: Joi.string()
             .required(),
@@ -88,14 +67,9 @@ export const createUser = async (req, res) => {
     const newUser = new UserMessage(user)
 
     try {
-        await UserMessage.findOne({email:user.email}, function(error, user){
+        await UserMessage.findOne({username:user.username}, function(error, user){
             if(user){
-                if(user.username)
                 res.status(404).send({ error: "Account already created" });
-                else {
-                /* newUser.save(); */
-                res.status(200).json(newUser);
-                }
             } else {
                 newUser.save();
                 res.status(200).json(newUser);
@@ -145,20 +119,69 @@ export const secregisterUser = async (req, res) => {
                     res.send({errors})
                 } else if(user.email === usern.email){
 
+                    
                     // update the user object found using findOne
                     user.username = usern.username;
-                    user.password = password;
-                    // now update it in MongoDB
-                    user.save();
-                    res.status(201).json(usern);
-                }    
-                       
-            } 
-        });
+                    user.password = password; 
 
-      
-    } catch (error) {
+                    const token = getToken({ _id: user._id })
+                    const refreshToken = getRefreshToken({ _id: user._id })
+
+                    user.refreshToken.push({ refreshToken })
+
+                    
+
+                    // now update it in MongoDB
+                    user.save((err, user) => {
+                        if(err) {
+                            res.statusCode = 500
+                            res.send(err)
+                        } else {
+                            res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+                            res.send({ success: true, token })
+                        }
+                    }); //save user function
+                } // if email is correct
+            } // if user is found
+        }) // db find function
+
+    } // try
+    catch (error) {
         res.status(409).json({ message: error.message });
 
+    } 
+}
+
+export const Logout = async (req,res) => {
+
+    /*-- get token from cookie --*/
+    const { signedCookies = {} } = req
+    const { refreshToken } = signedCookies
+
+    try {
+        await UserMessage.findById(req.user._id).then(
+        user => {
+        const tokenIndex = user.refreshToken.findIndex(
+            item => item.refreshToken === refreshToken
+        )
+
+        if (tokenIndex !== -1) {
+            user.refreshToken.id(user.refreshToken[tokenIndex]._id).remove()
+        }
+
+        user.save((err, user) => {
+            if (err) {
+            res.statusCode = 500
+            res.send(err)
+            } else {
+            res.clearCookie("refreshToken", COOKIE_OPTIONS)
+            res.send({ success: true })
+            }
+        })
+        },
+        err => console.log(err)
+    )
+    } catch(err) {
+        console.log(err)
     } 
 }

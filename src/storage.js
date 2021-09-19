@@ -1,5 +1,40 @@
 import React from 'react';
- let _ = {};
+
+/*-- function to decrypt key --*/
+import CryptoJS from 'crypto-js'
+const KEY = 'MDEyMzQ1Njc4OTAxMjM0NQ==';
+function decrypt(text) {
+    
+    // Separate IV and ciphertext
+    let iv = text.substring(0, 32);
+    let ciphertext = text.substring(32);
+
+    let bytes  = CryptoJS.AES.decrypt(
+        {ciphertext: CryptoJS.enc.Hex.parse(ciphertext)}, 
+        CryptoJS.enc.Base64.parse(KEY), 
+        {iv: CryptoJS.enc.Hex.parse(iv)});  // pass IV
+ 
+    let obj = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+    return obj; // or Hex as in the posted code 
+}
+
+export const getLocalStorage = (name) => {
+
+    const value = localStorage.getItem(name)
+
+    const data = value ? decrypt(value) : null
+
+    return data
+}
+
+
+
+
+
+
+
+/*  let _ = {};
 const sessionInfo = localStorage.getItem("sessionInfo");
 
 if (sessionInfo) {
@@ -27,8 +62,4 @@ export const clearSessionInfo = () => {
 export const removeSessionInfo = (name) => {
     delete _[name];
     sessionStorage.setItem("sessionInfo", btoa(encodeURIComponent(JSON.stringify(_))));
-}
-
-export const noDataFound = <div className="col-12 card customCard border-radius p-3 mt-3 mb-3 text-center">
-                        No Data Found
-                       </div>
+} */
