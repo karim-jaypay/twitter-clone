@@ -13,5 +13,9 @@ export const CREATE_TWEET = 'CREATE_TWEET'
 export const CREATE_TWEET_SUCCESS = 'CREATE_TWEET_SUCCESS'
 export const CREATE_TWEET_ERROR = 'CREATE_TWEET_ERROR'
 
+export const GET_TWEETS = 'GET_TWEETS'
+export const GET_TWEETS_SUCCESS = 'GET_TWEETS_SUCCESS'
+export const GET_TWEETS_ERROR = 'GET_TWEETS_ERROR'
+
 export * from './auth/actions';
 export * from './tweet/actions';

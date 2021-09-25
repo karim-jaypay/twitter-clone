@@ -17,7 +17,7 @@ export const createTweet = async (req, res) => {
             if(user){
 
                 tweet.save()
-                res.status(200).json({message: 'tweet sent'})
+                res.status(200).send('tweet sent')
             } else res.send({message: 'user not found'})
             }
         );
@@ -27,3 +27,18 @@ export const createTweet = async (req, res) => {
         
     }
 } 
+
+export const getAllTweets = async (req, res) => {
+
+    const { userid } = req.body
+
+    try {
+        const alltweets = await tweets.find({ userid })
+
+        if(alltweets)
+            res.status(200).json({ alltweets })
+        else res.status(200).json({ message: 'no tweets' })
+    } catch (error) {
+        console.log(error)
+    }
+}

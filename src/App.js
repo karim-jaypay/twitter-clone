@@ -28,13 +28,13 @@ export default function App() {
   const history = useHistory();
 
   const userInfo = getLocalStorage('ui')
-  
-  console.log(userInfo)
 
   const verifyUser = useCallback(() => {
+
     axios.post("http://localhost:5000/register/refreshToken", {
       withCredentials: true,
     }).then(response => {
+ 
       if (response.data.success) {
         localStorage.setItem('ui', response.data.data)
       }
@@ -45,6 +45,11 @@ export default function App() {
       }
       // call refreshToken every 5 minutes to renew the authentication token.
       setTimeout(verifyUser, 5 * 60 * 1000)
+    }).catch(error => {
+      if(error) {
+        localStorage.clear()
+        window.location.reload(false)
+      }
     })
   }, [])
 

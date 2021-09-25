@@ -59,7 +59,7 @@ router.get("/me", verifyUser, (req, res, next) => {
                       res.statusCode = 500
                       res.send(err)
                     } else {
-                      const userInfo = {id: user._id, name: user.name, username: user.username, email: user.email, active: user.active, token}
+                      const userInfo = {id: user._id, name: user.name, username: user.username, email: user.email, active: user.active, token }
                       const data = encrypt(userInfo)
                       res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
                       res.send({ success: true, data })
@@ -106,7 +106,7 @@ router.get("/me", verifyUser, (req, res, next) => {
                         res.statusCode = 500
                         res.send(err)
                       } else {
-                        const userInfo = {id: user._id, name: user.name, username: user.username, email: user.email, active: user.active, token}
+                        const userInfo = {id: user._id, name: user.name, username: user.username, email: user.email, active: user.active, token }
                         const data = encrypt(userInfo)
                         res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
                         res.send({ success: true, data })
@@ -124,10 +124,8 @@ router.get("/me", verifyUser, (req, res, next) => {
             res.statusCode = 401
             res.send("Unauthorized,"+ err)
           }
-        } else {
-          res.statusCode = 401
-          res.send("Unauthorized, no refresh token")
-        }
+        } 
+        
       })
 
     /*-- logout user --*/

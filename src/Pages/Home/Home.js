@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 
 import {Button} from 'react-bootstrap';
 import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
@@ -11,11 +11,15 @@ import poll from '../../public/poll.svg'
 import emoji from '../../public/happy.svg'
 import profile_picture from '../../public/default.png'
 
-import { createTweet } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
+import { createTweet, gettweets } from '../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import { tweetContext } from '../../Context/loader';
 
+import { getLocalStorage } from '../../storage'
+
 export default function Home(props) {
+
+    const userInfo = getLocalStorage('ui')
 
     /* dispatch */
     const dispatch = useDispatch()
@@ -23,10 +27,15 @@ export default function Home(props) {
     const { history } = props
     /* get contexts*/
     const { loader, changeLoader } = useContext(tweetContext)
-    console.log(loader)
 
     /* states */
     const [tweet, setTweet] = useState()
+
+    /* dispatch(gettweets({ user_id: userInfo.id })) */
+    const alltweets = useSelector( state => state )
+
+    console.log(alltweets)
+
 
   
     /* on change */
@@ -39,10 +48,23 @@ export default function Home(props) {
     /* tweet button function */
     const tweetAction = () => {
         changeLoader(true)
-        dispatch(createTweet({user_id: user.id, text: tweet.text, history, changeLoader}))
+        dispatch(createTweet({ user_id: userInfo.id, text: tweet.text, history, changeLoader }))
     }
+
+    /* get all tweets function */
+    const getalltweets = useMemo(() => {
+        
+        return alltweets
+    }, [alltweets])
+
+    useEffect(() => {
+
+        dispatch(gettweets({ user_id: userInfo.id }))
+
+    }, [dispatch])
+
     
-   /*  if(!localStorage.getItem('user-info')) history.push('/register')
+   /* => state  if(!localStorage.getItem('user-info')) history.push('/register')
     let user = JSON.parse(localStorage.getItem('user-info'));
     const name = user.name;
     const tweetid = user.id;

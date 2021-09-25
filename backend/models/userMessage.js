@@ -5,6 +5,7 @@ const Session = new mongoose.Schema({
     refreshToken: {
       type: String,
       default: "",
+      expires: 60*60*24*30
     },
   })
 

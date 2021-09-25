@@ -10,8 +10,6 @@ import './login.css'
 import logo from '../../public/logo.png'
 
 import { TextField } from '@material-ui/core';
-import { getSessionInfo } from '../../storage';
-import { UserContext } from '../../Context/user';
 
 export default function Login(props) {
 
@@ -20,22 +18,11 @@ export default function Login(props) {
 
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
-
-    const { token, setToken } = useContext(UserContext)
     
     const login = () => dispatch(loginUser({email, password, history}))
       
 
     const result = useSelector(state => state.auth)
-
-     useEffect(()=>{
-        if(result.message && result.message.success)
-        {
-            setToken(oldValues => {
-                return { ...oldValues, token: result.message.token }
-            })
-        }
-    },[result.message])
 
     /* async function login(){
         let item={email,password};
