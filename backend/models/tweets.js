@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const createSchema = mongoose.Schema({
     user_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     text: {
@@ -20,7 +20,7 @@ const createSchema = mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
 });
 

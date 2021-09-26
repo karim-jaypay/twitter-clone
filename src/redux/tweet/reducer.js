@@ -23,7 +23,7 @@ export default (state = initialState, action) => {
         }
         case GET_TWEETS:
         return  {
-            ...state, tweets: action.payload
+            ...state,
         }
         case GET_TWEETS_SUCCESS:
         return  {

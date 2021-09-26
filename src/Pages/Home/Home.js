@@ -4,6 +4,8 @@ import {Button} from 'react-bootstrap';
 import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
 import { TextareaAutosize } from '@material-ui/core';
 
+import moment from 'moment';
+
 import user from '../../public/user.svg'
 import image from '../../public/image.svg'
 import gif from '../../public/gif.svg'
@@ -29,12 +31,12 @@ export default function Home(props) {
     const { loader, changeLoader } = useContext(tweetContext)
 
     /* states */
-    const [tweet, setTweet] = useState()
+    const [tweet, setTweet] = useState({
+        text:''
+    })
 
     /* dispatch(gettweets({ user_id: userInfo.id })) */
-    const alltweets = useSelector( state => state )
-
-    console.log(alltweets)
+    const alltweets = useSelector( state => state.tweet ? state.tweet.tweets : '' )
 
 
   
@@ -48,6 +50,7 @@ export default function Home(props) {
     /* tweet button function */
     const tweetAction = () => {
         changeLoader(true)
+        setTweet({text:''})
         dispatch(createTweet({ user_id: userInfo.id, text: tweet.text, history, changeLoader }))
     }
 
@@ -61,7 +64,9 @@ export default function Home(props) {
 
         dispatch(gettweets({ user_id: userInfo.id }))
 
-    }, [dispatch])
+    }, [dispatch, loader])
+
+    console.log(getalltweets)
 
     
    /* => state  if(!localStorage.getItem('user-info')) history.push('/register')
@@ -204,7 +209,7 @@ export default function Home(props) {
             <div className="tweet-box">
                 <div className="d-flex">
                     <img className="profile-image mb-auto" src={profile_picture} alt="profile picture" />
-                    <TextareaAutosize className="ml-2 mt-2 text_area" name="text" onChange={handleChange} aria-label="empty textarea" placeholder="What's Happening" />
+                    <TextareaAutosize className="ml-2 mt-2 text_area" name="text" value={tweet.text} onChange={handleChange} aria-label="empty textarea" placeholder="What's Happening" />
                 
                 </div>
                 <div className="image-tweet">
@@ -219,31 +224,43 @@ export default function Home(props) {
                 </div>
             </div>
 
-            <div style={{borderBottom:'1px solid #eff3f4', cursor:'pointer'}}>
-                <div className="p-3">
-                    <div className="d-flex">
-                        <div style={{width:'10%', textAlign:'center'}}>
-                            <img className="profile-image" src={profile_picture} alt="user profile" />
-                        </div>
-                        <div className="ml-2">
-                            <div className="d-flex">
-                                <div style={{fontWeight:'bold'}}>karim darakji</div>
-                                <div style={{marginLeft:'3px'}}>@karimdarakji . 14h</div>
+        <div>
+            { getalltweets && getalltweets.map((item) => {
+
+                const startDate = moment(item.createdAt);
+                const timeEnd = moment();
+                const diff = timeEnd.diff(startDate);
+                const diffDuration = moment.duration(diff);
+        
+                return (
+                <div key={item._id} style={{borderBottom:'1px solid #eff3f4', cursor:'pointer'}}>
+                    <div className="p-3">
+                        <div className="d-flex">
+                            <div style={{width:'10%', textAlign:'center'}}>
+                                <img className="profile-image" src={profile_picture} alt="user profile" />
                             </div>
-                            <div className="mb-2">my first tweet</div>
-                            <div className="d-flex mb-2" style={{justifyContent:'space-between'}}>
-                                <div>
-                                    <IoChatbubbleEllipsesOutline />
+                            <div className="ml-2">
+                                <div className="d-flex">
+                                    <div style={{fontWeight:'bold'}}>{ item.user.name }</div>
+                                    <div style={{marginLeft:'3px'}}>@{ item.user.username } . { diffDuration.hours !== '0' ? diffDuration.minutes() + ' min ago' : diffDuration.hours() + ' hours ago' }</div>
                                 </div>
-                                <div>
-                                    <IoHeartOutline style={{color:'red'}} />
+                                <div className="mb-2">{ item.text }</div>
+                                <div className="d-flex mb-2" style={{justifyContent:'space-between'}}>
+                                    <div>
+                                        <IoChatbubbleEllipsesOutline />
+                                    </div>
+                                    <div>
+                                        <IoHeartOutline style={{color:'red'}} />
+                                    </div>
                                 </div>
                             </div>
+                        
                         </div>
-                       
                     </div>
                 </div>
-            </div>
+                )})
+            }
+        </div>
             {/* 
             <div style={{display:'flex',justifyContent:'center'}}>
             <img src={"http://localhost:8000/"+user.profile_picture} width="30" height="30" style={{borderRadius:10}}/>

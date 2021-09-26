@@ -13,7 +13,12 @@ axios.defaults.withCredentials = true
 /* CREATE TWEET */
 
 const TweetAsync = async (user_id, text) =>
-await axios.post("http://localhost:5000/tweets/create", { user_id, text })
+await axios.post("http://localhost:5000/tweets/create", { user_id, text }, 
+{
+  headers: {
+  'Authorization': `Bearer ${getLocalStorage('ui').token}`
+  }
+})
 .then((res) => res.data)
 .catch((error) => error.response.data);
 
@@ -23,7 +28,6 @@ function* create({ payload }) {
     const tweet = yield call(TweetAsync, user_id, text);
     if (!tweet.message) {
       yield put(createTweetSuccess('success'));
-      history.go(0)
 
     } else {
       yield put(createTweetError(tweet.message));

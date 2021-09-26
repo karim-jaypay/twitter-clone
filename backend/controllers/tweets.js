@@ -33,11 +33,28 @@ export const getAllTweets = async (req, res) => {
     const { userid } = req.body
 
     try {
-        const alltweets = await tweets.find({ userid })
+        /* const alltweets = await tweets.find({ userid }).populate('username') */
+
+        const alltweets = await tweets.aggregate([
+            {
+              $lookup: {
+                from: "usermessages",        //must be collection name for posts
+                let: { userid: "$user_id" },    
+                pipeline : [
+                    { $match: { $expr: { $eq: [ "$_id", "$$userid" ] } }, },
+                    { $project : { username:1, name:1 } }
+                ],
+                as: "user"
+              }
+            },
+            {
+                $unwind: "$user"
+            },
+          ]);
 
         if(alltweets)
-            res.status(200).json({ alltweets })
-        else res.status(200).json({ message: 'no tweets' })
+            res.status(200).send(alltweets)
+        else res.status(200).send({ message: 'no tweets' })
     } catch (error) {
         console.log(error)
     }

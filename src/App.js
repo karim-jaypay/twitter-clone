@@ -40,15 +40,13 @@ export default function App() {
       }
        else if(response.success) {
         localStorage.setItem('ui', response.data)
-      } else {
-        localStorage.clear()
-      }
+      } 
       // call refreshToken every 5 minutes to renew the authentication token.
       setTimeout(verifyUser, 5 * 60 * 1000)
     }).catch(error => {
       if(error) {
         localStorage.clear()
-        window.location.reload(false)
+        if(userInfo) window.location.reload(false)
       }
     })
   }, [])
