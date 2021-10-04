@@ -4,7 +4,10 @@ import {
     CREATE_TWEET_ERROR,
     GET_TWEETS,
     GET_TWEETS_SUCCESS,
-    GET_TWEETS_ERROR
+    GET_TWEETS_ERROR,
+    LIKE_TWEET,
+    LIKE_TWEET_SUCCESS,
+    LIKE_TWEET_ERROR
   } from '../actions';
 
   /* TWEET ACTIONS */
@@ -32,5 +35,18 @@ import {
   });
   export const gettweetsError = (message) => ({
     type: GET_TWEETS_ERROR,
+    payload: message
+  });
+
+  export const liketweet = (tweet_id, user_id) => ({
+    type: LIKE_TWEET,
+    payload: tweet_id, user_id
+  });
+  export const liketweetSuccess = (tweets) => ({
+    type: LIKE_TWEET_SUCCESS,
+    payload: tweets
+  });
+  export const liketweetError = (message) => ({
+    type: LIKE_TWEET_ERROR,
     payload: message
   });

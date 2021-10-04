@@ -1,5 +1,6 @@
 import tweets from '../models/tweets.js'
 import UserMessage from '../models/UserMessage.js'
+import tweetlikes from '../models/tweetlikes.js'
 
 import mongoose from 'mongoose'
 
@@ -30,7 +31,9 @@ export const createTweet = async (req, res) => {
 
 export const getAllTweets = async (req, res) => {
 
-    const { userid } = req.body
+    const { user_id } = req.body
+
+    console.log(user_id)
 
     try {
         /* const alltweets = await tweets.find({ userid }).populate('username') */
@@ -45,11 +48,39 @@ export const getAllTweets = async (req, res) => {
                     { $project : { username:1, name:1 } }
                 ],
                 as: "user"
-              }
+              },
             },
             {
                 $unwind: "$user"
             },
+
+            {
+                $lookup: {
+                    from: "tweetlikes",        //must be collection name for posts
+                    let: {  tweetid: "$_id" },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$user_id", mongoose.Types.ObjectId(user_id) ] },
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                          /* {
+                            tweet_id: "$$tweetid" , user_id: mongoose.Types.ObjectId(user_id)
+                         } */
+                        },
+                    ],
+                    as: "is_liked"
+                  }
+            },
+            
+             {
+                $addFields: {
+                    is_liked: { $cond: { if: { $anyElementTrue: [ "$is_liked" ] }, then: true, else: false } }
+                }
+            } 
+           
           ]);
 
         if(alltweets)
@@ -57,5 +88,37 @@ export const getAllTweets = async (req, res) => {
         else res.status(200).send({ message: 'no tweets' })
     } catch (error) {
         console.log(error)
+    }
+}
+
+export const likeTweet = async (req,res) => {
+
+    const { tweet_id, user_id } = req.body
+
+    try{
+
+        await tweetlikes.findOne({
+            user_id: { $in: [
+                mongoose.Types.ObjectId(user_id)
+            ]},
+            tweet_id: { $in: [
+                mongoose.Types.ObjectId(tweet_id)
+            ]}
+        }, function( error, liked) {
+
+            if(liked){
+                liked.remove()
+                res.status(200).send('like removed')
+            } else {
+                const liketweet = new tweetlikes({ tweet_id, user_id })
+                liketweet.save()
+                res.status(200).send('like success')
+            }
+
+            }
+        );
+
+    } catch (error) {
+
     }
 }

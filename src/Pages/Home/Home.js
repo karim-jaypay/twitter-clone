@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
 
 import {Button} from 'react-bootstrap';
-import {IoHeartOutline,IoHeart,IoChatbubbleEllipsesOutline} from 'react-icons/io5';
+import {IoHeartOutline,IoHeart,IoChatbubbleOutline, IoRepeatOutline, IoPushOutline} from 'react-icons/io5';
 import { TextareaAutosize } from '@material-ui/core';
 
 import moment from 'moment';
@@ -13,7 +13,7 @@ import poll from '../../public/poll.svg'
 import emoji from '../../public/happy.svg'
 import profile_picture from '../../public/default.png'
 
-import { createTweet, gettweets } from '../../redux/actions';
+import { createTweet, gettweets, liketweet } from '../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { tweetContext } from '../../Context/loader';
 
@@ -68,6 +68,9 @@ export default function Home(props) {
 
     console.log(getalltweets)
 
+    const like_tweet = (tweet_id, user_id) => {
+        dispatch(liketweet( tweet_id, user_id ))
+    }
     
    /* => state  if(!localStorage.getItem('user-info')) history.push('/register')
     let user = JSON.parse(localStorage.getItem('user-info'));
@@ -231,6 +234,7 @@ export default function Home(props) {
                 const timeEnd = moment();
                 const diff = timeEnd.diff(startDate);
                 const diffDuration = moment.duration(diff);
+                
         
                 return (
                 <div key={item._id} style={{borderBottom:'1px solid #eff3f4', cursor:'pointer'}}>
@@ -242,16 +246,31 @@ export default function Home(props) {
                             <div className="ml-2">
                                 <div className="d-flex">
                                     <div style={{fontWeight:'bold'}}>{ item.user.name }</div>
-                                    <div style={{marginLeft:'3px'}}>@{ item.user.username } . { diffDuration.hours !== '0' ? diffDuration.minutes() + ' min ago' : diffDuration.hours() + ' hours ago' }</div>
+                                    <div class="username" style={{marginLeft:'3px'}}>@{ item.user.username } · { 
+                                    parseInt(diffDuration.hours()) <= 0 
+                                    ? diffDuration.minutes() + ' min ago' 
+                                    : parseInt(diffDuration.days()) > 0 
+                                    ? diffDuration.days() + ' days ago' 
+                                    : diffDuration.hours() + ' hours ago'}</div>
                                 </div>
                                 <div className="mb-2">{ item.text }</div>
                                 <div className="d-flex mb-2" style={{justifyContent:'space-between'}}>
                                     <div>
-                                        <IoChatbubbleEllipsesOutline />
+                                        <IoChatbubbleOutline />
                                     </div>
+
                                     <div>
+                                        <IoRepeatOutline />
+                                    </div>
+
+                                    <div onClick={() => like_tweet({ tweet_id: item._id, user_id: item.user._id })}>
                                         <IoHeartOutline style={{color:'red'}} />
                                     </div>
+
+                                    <div>
+                                        <IoPushOutline />
+                                    </div>
+
                                 </div>
                             </div>
                         
