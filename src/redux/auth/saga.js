@@ -36,7 +36,7 @@ function* loginWithEmailPassword({ payload }) {
 
 const registerAsync = async (data) => {
   const month = moment().month(data.month).format("MM");
-  return await axios.post("http://localhost:5000/register/create", { name: data.name, email: data.email, birth: data.day+"/"+month+"/"+data.year })
+  return await axios.post("http://localhost:5000/register/create", { name: data.name, email: data.email, birth: data.year+"/"+month+"/"+data.day })
     .then((res) => res.data)
     .catch((error) => error.response.data);
 }

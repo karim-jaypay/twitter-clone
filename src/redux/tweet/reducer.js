@@ -7,7 +7,10 @@ import { CREATE_TWEET,
     GET_TWEETS_SUCCESS, 
     LIKE_TWEET,
     LIKE_TWEET_SUCCESS,
-    LIKE_TWEET_ERROR } from '../actions'
+    LIKE_TWEET_ERROR,
+    COMMENT_TWEET,
+    COMMENT_TWEET_SUCCESS,
+    COMMENT_TWEET_ERROR } from '../actions'
 
 const initialState = {
     data: '',
@@ -51,6 +54,19 @@ export default (state = initialState, action) => {
             ...state, message: action.payload
         }
         case LIKE_TWEET_ERROR:
+        return  {
+            ...state, message: action.payload
+        }
+
+        case COMMENT_TWEET:
+        return  {
+            ...state,
+        }
+        case COMMENT_TWEET_SUCCESS:
+        return  {
+            ...state, message: action.payload
+        }
+        case COMMENT_TWEET_ERROR:
         return  {
             ...state, message: action.payload
         }

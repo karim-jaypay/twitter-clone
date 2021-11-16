@@ -3,10 +3,6 @@ import {BrowserRouter as Router,Route,Switch, useHistory, Redirect} from 'react-
 
 import axios from 'axios'
 
-import Profile from './profile';
-import Userprofile from './userprofile';
-import Search from './Search';
-
 import Sidebar from './Components/Sidebar/Sidebar';
 import Header from './Components/Header/Header';
 
@@ -18,6 +14,7 @@ import { Logout } from './Pages/Logout/Logout'
 const Welcome = lazy(() => import('./Welcome'));
 const Login = lazy(() => import('./Pages/Login/Login.js'));
 const Home = lazy(() => import('./Pages/Home/Home.js'))
+const Profile = lazy(() => import('./Pages/Profile.js'))
 
 
 
@@ -101,9 +98,10 @@ export default function App() {
     <TweetLoader>
         <Switch>
           <Auth path="/home" component={Home}/>
-          <Auth path="/:username" component={Profile}/>
+          <Auth path="/profile/:username" component={Profile}/>
+          <Redirect to="/home" />
         </Switch>
-      <Redirect to="/home"/>
+      
     </TweetLoader>
     }
      

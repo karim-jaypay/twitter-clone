@@ -106,7 +106,16 @@ router.get("/me", verifyUser, (req, res, next) => {
                         res.statusCode = 500
                         res.send(err)
                       } else {
-                        const userInfo = {id: user._id, name: user.name, username: user.username, email: user.email, active: user.active, token }
+                        const userInfo = {
+                          id: user._id, 
+                          name: user.name, 
+                          username: user.username, 
+                          email: user.email, 
+                          birth: user.birth,
+                          active: user.active, 
+                          picture: user.picture, 
+                          createdAt: user.createdAt, 
+                          token }
                         const data = encrypt(userInfo)
                         res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
                         res.send({ success: true, data })

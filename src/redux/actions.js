@@ -22,5 +22,9 @@ export const LIKE_TWEET = 'LIKE_TWEET'
 export const LIKE_TWEET_SUCCESS = 'LIKE_TWEET_SUCCESS'
 export const LIKE_TWEET_ERROR = 'LIKE_TWEET_ERROR'
 
+export const COMMENT_TWEET = 'COMMENT_TWEET'
+export const COMMENT_TWEET_SUCCESS = 'COMMENT_TWEET_SUCCESS'
+export const COMMENT_TWEET_ERROR = 'COMMENT_TWEET_ERROR'
+
 export * from './auth/actions';
 export * from './tweet/actions';

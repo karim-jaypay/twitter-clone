@@ -1,6 +1,7 @@
 import tweets from '../models/tweets.js'
 import UserMessage from '../models/UserMessage.js'
 import tweetlikes from '../models/tweetlikes.js'
+import tweetComments from '../models/tweetComments.js'
 
 import mongoose from 'mongoose'
 
@@ -33,7 +34,6 @@ export const getAllTweets = async (req, res) => {
 
     const { user_id } = req.body
 
-    console.log(user_id)
 
     try {
         /* const alltweets = await tweets.find({ userid }).populate('username') */
@@ -74,10 +74,46 @@ export const getAllTweets = async (req, res) => {
                     as: "is_liked"
                   }
             },
+
+            {
+                $lookup: {
+                    from: "tweetlikes",        //must be collection name for posts
+                    let: {  tweetid: "$_id" },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                    ],
+                    as: "likes"
+                  }
+            },
+
+            {
+                $lookup: {
+                    from: "tweetcomments",        //must be collection name for posts
+                    let: {  tweetid: "$_id" },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                    ],
+                    as: "comments"
+                  }
+            },
             
              {
                 $addFields: {
-                    is_liked: { $cond: { if: { $anyElementTrue: [ "$is_liked" ] }, then: true, else: false } }
+                    is_liked: { $cond: { if: { $anyElementTrue: [ "$is_liked" ] }, then: true, else: false } },
+                    likes: { $size: "$likes" },
+                    comments: { $size: "$comments"}
                 }
             } 
            
@@ -120,5 +156,22 @@ export const likeTweet = async (req,res) => {
 
     } catch (error) {
 
+    }
+}
+
+export const commentTweet = async (req,res) => {
+
+    const { tweet_id, user_id, comment } = req.body
+
+    try{
+
+        const commenttweet = new tweetComments({ tweet_id, user_id, comment })
+        await commenttweet.save().then(() => {
+            res.status(200).send('comment success')
+        }).catch((err) => res.status(200).send({message: err}))
+        
+
+    } catch (error) {
+        res.status(200).send({message: err})
     }
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
+import path from 'path';
 
 import passport from 'passport'
 
@@ -20,6 +21,11 @@ const app = express();
 
 app.use(express.json({ limit: "30mb", extended: true}));
 app.use(express.urlencoded({ limit: "30mb", extended: true}));
+
+const __dirname = path.resolve();
+
+app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/media'));
 
 app.use(cookieParser(process.env.COOKIE_SECRET)) 
 

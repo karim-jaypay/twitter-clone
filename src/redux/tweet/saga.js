@@ -1,15 +1,16 @@
 import { call, put, takeLatest, all, } from "redux-saga/effects"
 
-import { CREATE_TWEET, GET_TWEETS, LIKE_TWEET } from "../actions"
+import { CREATE_TWEET, GET_TWEETS, LIKE_TWEET, COMMENT_TWEET } from "../actions"
 
-import { createTweet, 
+import {
   createTweetSuccess, 
   createTweetError, 
   gettweetsSuccess, 
   gettweetsError, 
-  liketweet,
   liketweetSuccess,
-  liketweetError } from './actions'
+  liketweetError,
+  commenttweetError,
+  commenttweetSuccess } from './actions'
 
 import axios from 'axios'
 import moment from 'moment'
@@ -97,10 +98,37 @@ function* liketweetfunction({ payload }) {
   }
 }
 
+/* COMMENT TWEET */
+const CommentTweetAsync = async (tweet_id, user_id, comment) =>
+await axios.post("http://localhost:5000/tweets/comment-tweet", { tweet_id, user_id, comment }, 
+{
+  headers: {
+  'Authorization': `Bearer ${getLocalStorage('ui').token}`
+  }
+})
+.then((res) => res.data)
+.catch((error) => error.response.data);
+
+function* commenttweetfunction({ payload }) {
+  const { tweet_id, user_id, comment } = payload;
+  try {
+    const commentAction = yield call(CommentTweetAsync, tweet_id, user_id, comment);
+    if (!commentAction.message) {
+      yield put(commenttweetSuccess('success'));
+
+    } else {
+      yield put(commenttweetError(commentAction.message));
+    }  
+  } catch (error) {
+     yield put(commenttweetError(error));
+  }
+}
+
 export default function* tweetSaga() {
   yield all ([
     takeLatest(CREATE_TWEET, create),
     takeLatest(GET_TWEETS, getTweets),
-    takeLatest(LIKE_TWEET, liketweetfunction)
+    takeLatest(LIKE_TWEET, liketweetfunction),
+    takeLatest(COMMENT_TWEET, commenttweetfunction)
   ])
 }

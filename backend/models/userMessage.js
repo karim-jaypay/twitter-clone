@@ -35,6 +35,10 @@ const User = mongoose.Schema({
     active: {
         type: Number,
     },
+    picture: {
+        type: String,
+        default: "default.png"
+    },
     refreshToken: {
         type: [Session],
     },
