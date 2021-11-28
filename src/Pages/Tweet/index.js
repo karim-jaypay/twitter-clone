@@ -8,6 +8,7 @@ import { Button } from 'react-bootstrap'
 import { gettweet, liketweet, commenttweet } from '../../redux/actions'
 
 import { getLocalStorage } from '../../storage'
+import TweetComments from '../../Components/Tweets';
 
 function TweetPage({ history }) {
 
@@ -17,28 +18,31 @@ function TweetPage({ history }) {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        dispatch(gettweet( tweet_id ))
-    }, [dispatch, tweet_id])
-
-    const data = useSelector(state => state.tweet.tweet[0])
-
     //variables to declare after fetching data from api
     const [tempData, setTempData] = useState({
         isLiked: false,
         likeCount: 0,
         commentCount: 0,
+        allComments: []
     })
+
     const first = useRef(false)
+    const data = useSelector(state => state.tweet.tweet[0])
+
+    useEffect(() => {
+        dispatch(gettweet( tweet_id ))
+    }, [dispatch, tweet_id])
+
     if(data && !first.current) {
         setTempData({
             isLiked: data.is_liked,
             likeCount: data.likes,
             commentCount: data.comments,
+            allComments: data.allcomments
         })
         first.current = true
     }
-
+    
     const [commentDetail, setCommentDetail] = useState({
         show: false,
         id:'',
@@ -72,8 +76,26 @@ function TweetPage({ history }) {
     //reply tweet action
     const replyAction = (values) => {
         dispatch(commenttweet(values))
+        setTempData({
+            ...tempData, 
+            commentCount: tempData.commentCount + 1, 
+            allComments: [
+                {
+                    comment: tweet.text,
+                    createdAt: moment(),
+                    tweet_id: tweet_id,
+                    user: {
+                        name: userInfo.name,
+                        picture: userInfo.picture,
+                        username: userInfo.username,
+                        _id: userInfo._id
+                    },
+                    __v: 0
+                },
+                ...tempData.allComments, 
+            ]
+        })
         setTweet({ text: '' })
-        setTempData({...tempData, commentCount: tempData.commentCount + 1})
     }
 
     return (
@@ -145,6 +167,9 @@ function TweetPage({ history }) {
                     <Button className="d-block py-1 px-3 mt-auto ms-auto tweet_btn" style={{height:'34px'}} onClick={() => replyAction({ user_id: userInfo._id, tweet_id: tweet_id, comment: tweet.text })} disabled={(!tweet || !tweet.text) ? true : false}>Reply</Button>
                 </div>
                 <hr/>
+                {
+                    tempData.allComments && tempData.allComments.map((item) => <TweetComments data={item} />)
+                }
             </>
             }
         </div>

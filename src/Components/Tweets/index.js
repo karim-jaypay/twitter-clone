@@ -59,7 +59,7 @@ function Tweets(props) {
                     <div className="text-center" style={{width:'10%'}}>
                         <img className="profile-image" src={`http://localhost:5000/` + userInfo.picture} alt="user profile" onClick={() => history.push(`/profile/${data.user.username}`)}/>
                     </div>
-                    <div className="ms-2" style={{width: '300px'}}>
+                    <div className="ms-2" >
                         <div className="d-flex">
                             <div className="fw-bold">{ data.user.name }</div>
                             <div className="username" style={{marginLeft:'3px'}}>@{ data.user.username } · { 
@@ -73,7 +73,7 @@ function Tweets(props) {
                             }
                             </div>
                         </div>
-                        <div className="mb-2">{ data.text }</div>
+                        <div className="mb-2">{ data.text ? data.text : data.comment }</div>
                         <div className="d-flex mb-2 justify-content-between tweet_options_icons--p">
                             <div className="d-flex">
                                 <IoChatbubbleOutline className="mt-auto me-2" style={{marginBottom:'2px', color: 'grey', pointerEvents:'auto'}} onClick={(e) => {e.stopPropagation(); setCommentDetail({

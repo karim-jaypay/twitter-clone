@@ -205,6 +205,34 @@ export const getTweet = async (req, res) => {
                     as: "comments"
                   }
             },
+            {
+                $lookup: {
+                    from: "tweetcomments",        //must be collection name for posts
+                    let: {  tweetid: mongoose.Types.ObjectId(tweet_id) },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                        { $lookup: {
+                            from: "usermessages",
+                            let: { userid: "$user_id" },
+                            pipeline: [
+                              { $match: { $expr: { $eq: [ "$_id", "$$userid" ] } } },
+                              { $project: { _id: 1, picture: 1, username: 1, name: 1 }}
+                            ],
+                            as: "user"
+                          }},
+                        { $unwind: "$user" },
+                        { $project: { user_id: 0 }},
+                        { $sort: { createdAt: -1 } },
+                    ],
+                    as: "allcomments"
+                  }
+            },
             
              {
                 $addFields: {
