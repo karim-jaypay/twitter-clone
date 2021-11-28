@@ -1,4 +1,3 @@
-import React from 'react';
 
 /*-- function to decrypt key --*/
 import CryptoJS from 'crypto-js'
@@ -27,39 +26,3 @@ export const getLocalStorage = (name) => {
 
     return data
 }
-
-
-
-
-
-
-
-/*  let _ = {};
-const sessionInfo = localStorage.getItem("sessionInfo");
-
-if (sessionInfo) {
-    _ = JSON.parse(decodeURIComponent(atob(sessionInfo)));
-}
-
-export const setSessionInfo = ({ name, val }) => {
-     _[name] = val;
-     localStorage.setItem("sessionInfo", btoa(encodeURIComponent(JSON.stringify(_))));
-
-}
-
-export const getSessionInfo = (name) => {
-  return (_[name]);
-}
-
-export const clearSessionInfo = () => {
-    localStorage.clear();
-    for (const prop of Object.keys(_)) {
-        delete _[prop];
-    }
-
-}
-
-export const removeSessionInfo = (name) => {
-    delete _[name];
-    sessionStorage.setItem("sessionInfo", btoa(encodeURIComponent(JSON.stringify(_))));
-} */

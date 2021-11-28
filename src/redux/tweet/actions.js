@@ -5,6 +5,9 @@ import {
     GET_TWEETS,
     GET_TWEETS_SUCCESS,
     GET_TWEETS_ERROR,
+    GET_TWEET,
+    GET_TWEET_SUCCESS,
+    GET_TWEET_ERROR,
     LIKE_TWEET,
     LIKE_TWEET_SUCCESS,
     LIKE_TWEET_ERROR,
@@ -38,6 +41,19 @@ import {
   });
   export const gettweetsError = (message) => ({
     type: GET_TWEETS_ERROR,
+    payload: message
+  });
+
+  export const gettweet = (tweet_id) => ({
+    type: GET_TWEET,
+    payload: { tweet_id }
+  });
+  export const gettweetSuccess = (tweet) => ({
+    type: GET_TWEET_SUCCESS,
+    payload: tweet
+  });
+  export const gettweetError = (message) => ({
+    type: GET_TWEET_ERROR,
     payload: message
   });
 

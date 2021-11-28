@@ -10,19 +10,23 @@ import { getLocalStorage } from '../../storage';
 
 function Tweets(props) {
 
+    const userInfo = getLocalStorage('ui')
+
     const dispatch = useDispatch()
 
     const { data, history } = props
 
     const [isLiked, setIsLiked] = useState(data.is_liked)
+
     const [likeCount, setLikeCount] = useState(data.likes)
+    const [commentCount, setCommentCount] = useState(data.comments)
 
     const [commentDetail, setCommentDetail] = useState({
         show: false,
         id:'',
         name: '',
         username: '',
-        data: '',
+        date: '',
         tweet: '',
     })
 
@@ -49,29 +53,30 @@ function Tweets(props) {
 
     return (
         <>
-        <div style={{borderBottom:'1px solid #eff3f4', cursor:'pointer'}}>
+        <div className="tweet_div" onClick={() => {history.push(`/${data.user.username}/tweet/${data._id}`)} }>
             <div className="p-3">
                 <div className="d-flex">
-                    <div style={{width:'10%', textAlign:'center'}}>
-                        <img className="profile-image" src={`http://localhost:5000/` + getLocalStorage('ui').picture} alt="user profile" onClick={() => history.push(`/profile/${data.user.username}`)}/>
+                    <div className="text-center" style={{width:'10%'}}>
+                        <img className="profile-image" src={`http://localhost:5000/` + userInfo.picture} alt="user profile" onClick={() => history.push(`/profile/${data.user.username}`)}/>
                     </div>
-                    <div className="ml-2">
+                    <div className="ms-2" style={{width: '300px'}}>
                         <div className="d-flex">
-                            <div style={{fontWeight:'bold'}}>{ data.user.name }</div>
+                            <div className="fw-bold">{ data.user.name }</div>
                             <div className="username" style={{marginLeft:'3px'}}>@{ data.user.username } · { 
-                            
-                            parseInt(diffDuration.hours()) <= 0 
-                            ? diffDuration.minutes() + ' min ago' 
-                            : (parseInt(diffDuration.days()) > 0 && parseInt(diffDuration.months()) < 0)
-                            ? diffDuration.days() + ' days ago' 
-                            : parseInt(diffDuration.months()) > 0
-                            ? moment(startDate).format('MMM D')
-                            : diffDuration.hours() + ' hours ago'}</div>
+                            parseInt(diffDuration.months()) > 0 ?
+                            moment(startDate).format('MMM D')
+                            : parseInt(diffDuration.days()) > 0 ?
+                            diffDuration.days() + ' days ago'
+                            : parseInt(diffDuration.hours()) > 0 ?
+                            diffDuration.hours() + ' hours ago'
+                            : diffDuration.minutes() + ' min ago' 
+                            }
+                            </div>
                         </div>
                         <div className="mb-2">{ data.text }</div>
-                        <div className="d-flex mb-2" style={{justifyContent:'space-between'}}>
+                        <div className="d-flex mb-2 justify-content-between tweet_options_icons--p">
                             <div className="d-flex">
-                                <IoChatbubbleOutline className="mt-auto mr-2" style={{marginBottom:'2px', color: 'grey'}} onClick={() => { setCommentDetail({
+                                <IoChatbubbleOutline className="mt-auto me-2" style={{marginBottom:'2px', color: 'grey', pointerEvents:'auto'}} onClick={(e) => {e.stopPropagation(); setCommentDetail({
                                     show: true,
                                     id: data._id,
                                     name: data.user.name,
@@ -79,7 +84,7 @@ function Tweets(props) {
                                     date: moment(startDate).format('MMM D'),
                                     tweet: data.text
                                 })}} />
-                                <div className="mt-auto" style={{fontSize: '14px', color:'grey'}}>{data.comments}</div>
+                                <div className="mt-auto" style={{fontSize: '14px', color:'grey'}}>{commentCount}</div>
                             </div>
 
                             <div>
@@ -87,7 +92,7 @@ function Tweets(props) {
                             </div>
 
                             <div className="d-flex">
-                                <div className="mr-2" onClick={() => { like_tweet({ tweet_id: data._id, user_id: data.user._id }) } }>
+                                <div className="me-2" onClick={(e) => {e.stopPropagation(); like_tweet({ tweet_id: data._id, user_id: data.user._id }) } }>
                                     { isLiked ?
                                     <IoHeart style={{color:'red'}} />
                                     :
@@ -117,6 +122,7 @@ function Tweets(props) {
         tweetDate={commentDetail.date}
         tweet={commentDetail.tweet}
         onHide={() => setCommentDetail({ ...commentDetail, show: !commentDetail.show })}
+        changeCommentCount={ () => setCommentCount(commentCount + 1)}
         history={history}
         />
         </>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import moment from 'moment';
 
 import { IoCalendarOutline, IoLocationOutline } from 'react-icons/io5'
@@ -10,8 +10,8 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
-import '../css/profile.css'
-import { picture, user } from '../variables';
+import '../Styles/profile.scss'
+import { picture, userInfo } from '../variables';
 
 function Profile() {
     
@@ -21,8 +21,8 @@ function Profile() {
     setValue(newValue);
   };
 
-  const birth = moment(new Date(user.birth))
-  const created = moment( new Date(user.createdAt) )
+  const birth = moment(new Date(userInfo.birth))
+  const created = moment( new Date(userInfo.createdAt) )
 
   /* const toggleTab = (index) => {
     setToggleState(index);
@@ -85,14 +85,14 @@ function Profile() {
             <div className="profile-pic" style={{backgroundImage: `url("${picture}")`}}></div>
 
             <div className="edit-profile">
-              <a className="edit-btn" href=""> Edit profile</a>
+              <a className="edit-btn" href="/"> Edit profile</a>
             </div>
           
           </div>
 
           <div className="user-info">
-            <div className="name">{user.name}</div>
-            <div className="username">@{user.username}</div>
+            <div className="name">{userInfo.name}</div>
+            <div className="username">@{userInfo.username}</div>
 
             <div className="d-flex">
               <IoLocationOutline className="ic"/>

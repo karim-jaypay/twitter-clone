@@ -1,4 +1,4 @@
-import React, {Suspense, lazy, useContext, useCallback, useEffect } from 'react'
+import React, {Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import {BrowserRouter as Router,Route,Switch, useHistory, Redirect} from 'react-router-dom';
 
 import axios from 'axios'
@@ -8,16 +8,15 @@ import Header from './Components/Header/Header';
 
 import { getLocalStorage } from './storage';
 import { TweetLoader } from './Context/loader';
+import { UserContext } from './Context/UserContext';
 
 import { Logout } from './Pages/Logout/Logout'
 
-const Welcome = lazy(() => import('./Welcome'));
+const Welcome = lazy(() => import('./Pages/Welcome/index.js'));
 const Login = lazy(() => import('./Pages/Login/Login.js'));
 const Home = lazy(() => import('./Pages/Home/Home.js'))
 const Profile = lazy(() => import('./Pages/Profile.js'))
-
-
-
+const TweetPage = lazy(() => import('./Pages/Tweet/index.js'))
 
 
 export default function App() {
@@ -46,25 +45,25 @@ export default function App() {
         if(userInfo) window.location.reload(false)
       }
     })
-  }, [])
+  }, [userInfo])
 
   useEffect(() => {
     verifyUser()
   }, [verifyUser])
 
-  /* console.log(token) */
-
-  const Auth = ({ component: Component, ...rest }) => {
+  const Auth = ({ component: Component, path, header, headerTitle, back }) => {
     return (
         <Route
-            {...rest}
+            path={path}
             render={(props) =>
                  userInfo ? (
                   <>
                   <div className="d-flex">
                     <Sidebar {...props}/>
                     <div className="w-50">
-                      <Header />
+                      { header !== false &&
+                      <Header headerTitle={headerTitle} back={back} history={history} />
+                      }
                       <Component {...props} />
                     </div>
                     <div style={{width:'41%',borderLeft:'1px solid #eff3f4'}}>
@@ -86,41 +85,26 @@ export default function App() {
     <Suspense fallback={''}>
       <Switch>
 
-      {!userInfo ?
-      <>
-    <Switch>
-      <Route path="/login" component={Login}/>
-      <Route path="/welcome" component={Welcome} />
-    </Switch>
-    <Redirect to="/welcome" />
-    </>
-    :
-    <TweetLoader>
-        <Switch>
-          <Auth path="/home" component={Home}/>
-          <Auth path="/profile/:username" component={Profile}/>
-          <Redirect to="/home" />
-        </Switch>
-      
-    </TweetLoader>
-    }
-     
-
-      {/* <Route path="/profile">
-        <Profile/>
-      </Route>
-      <Route path="/userprofile/:id">
-        <Protected Cmp={Userprofile}/>
-      </Route>
-      <Route path="/Search">
-        <Protected Cmp={Search}/>
-      </Route> */}
-      {/* <Route path="/">
-        <Protected Cmp={Home}/>
-      </Route> */}
-      </Switch>
-      
-      </Suspense>
-      </Router>
+        {!userInfo ?
+        <>
+          <Switch>
+            <Route path="/login" component={Login}/>
+            <Route path="/welcome" component={Welcome} />
+          </Switch>
+        <Redirect to="/welcome" />
+        </>
+        :
+        <TweetLoader>
+          <Switch>
+              <Auth path="/home" component={Home}/>
+              <Auth path="/:username/tweet/:id" component={TweetPage} headerTitle="Tweet" back={true} />
+              <Auth path="/profile/:username" component={Profile}/>
+              <Redirect to="/home" />
+          </Switch>
+        </TweetLoader>
+        }
+      </Switch>  
+    </Suspense>
+  </Router>
   )
 }

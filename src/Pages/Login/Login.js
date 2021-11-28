@@ -1,15 +1,13 @@
-import React , {useState,useEffect, useContext} from 'react';
+import React , {useState} from 'react';
 import {Link} from 'react-router-dom';
-import {Button} from 'react-bootstrap';
+import { TextField } from '@material-ui/core';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { loginUser } from '../../redux/auth/actions'
 
-import './login.css'
+import '../../Styles/login.scss'
 
 import logo from '../../public/logo.png'
-
-import { TextField } from '@material-ui/core';
 
 export default function Login(props) {
 
@@ -24,32 +22,11 @@ export default function Login(props) {
 
     const result = useSelector(state => state.auth)
 
-    /* async function login(){
-        let item={email,password};
-        try{
-        let result = await fetch("http://localhost:8000/api/login",{
-            method:'POST',
-            headers:{
-                "Content-Type":"application/json",
-                "Accept":"application/json"
-            },
-            body:JSON.stringify(item)
-        });
-        result = await result.json();
-        localStorage.setItem("user-info",JSON.stringify(result));
-        history.push("/");
-        history.go(0);
-    } catch(e){
-        setError("Email or password is incorrect");
-    }
-
-        
-    } */
     return(
         <div className="contents">
-            <img alt="" src={logo} className="logo"/>
+            <img alt="twitter" src={logo} className="logo"/>
             <h1>Log in to Twitter</h1>
-            <div className="" style={{marginTop:20}}>
+            <div style={{marginTop:20}}>
                 <div className="mb-4">
                 <TextField className="input-form Muiborder" label="Email, or Username" variant="outlined" onChange={(e)=>setEmail(e.target.value)} />
                 </div>
@@ -59,9 +36,9 @@ export default function Login(props) {
                 {result.message && result.message !== 'success' &&
                     <p style={{color:'red',marginTop:20}}>Incorrect username or password</p>
                 }
-                <Button className="d-block py-3" style={{background:'#1da1f2', width:'400px',fontWeight:'bold', borderRadius:'30px'}} onClick={login}>Login</Button>
+                <button className="d-block py-3 main__btn--primary w-100" onClick={login}>Login</button>
             
-                <p style={{marginTop:10, textAlign: 'center'}}><Link to="">Forgot Password?</Link> . <Link to="/welcome">Sign Up for Twitter</Link>
+                <p className="mt-5 text-center"><Link to="">Forgot Password?</Link> . <Link to="/welcome">Sign Up for Twitter</Link>
                 </p>
             </div>
 

@@ -1,5 +1,5 @@
 import { getLocalStorage } from "./storage"
 
-export const user = getLocalStorage('ui')
+export const userInfo = getLocalStorage('ui')
 
-export const picture = process.env.REACT_APP_API + user.picture
+export const picture = process.env.REACT_APP_API + userInfo.picture

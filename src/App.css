@@ -1,3 +1,23 @@
+:root {
+  --main-color: rgb(29, 155, 240);
+  --border-color: rgb(207, 217, 222);
+}
+
+/*--- main button style ---*/
+.main__btn--primary, .main__btn--secondary {
+  font-weight: bold;
+  width: 400px;
+  border-radius: 30px;
+}
+.main__btn--primary {
+  background-color: var(--main-color);
+  color: white;
+}
+.main__btn--secondary {
+  background-color: transparent;
+  color: var(--main-color);
+  border: 1px solid var(--border-color)
+}
 /*--- text area ---*/
 .text_area {
   border: 0;
@@ -8,7 +28,7 @@
 
 /*--- tweet button ---*/
 .tweet_btn {
-  background: #1da1f2 !important;
+  background: var(--main-color) !important;
   font-weight:  bold !important;
   border-radius: 20px !important
 }
@@ -46,6 +66,13 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.274);
 }
 
+hr {
+  background-color: var(--border-color) !important;
+}
+
+.cont {
+  padding: 0.5rem 1rem
+}
 .bloc-tabs {
   display: flex;
 }
@@ -107,26 +134,16 @@ button {
 .active-content {
   display: block;
 }
-.body_t {
+
+/*--- WELCOME ---*/
+.footer_info {
   display: flex;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
+  justify-content: center;
 }
-
 .footer_info span{
   font-size: 14px;
   color: grey
-}
-
-
-@media screen and (max-width: 700px) {
-  .body_t {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-  
-  
 }
 
 /* HOME */
@@ -216,4 +233,19 @@ button {
   max-height: 150px;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.tweet_div {
+  border-color: var(--border-color);
+  cursor: pointer;
+  transition: .3s;
+}
+.tweet_div:hover {
+  background-color: #F7F7F7;
+  transition: .3s;
+}
+
+.tweet_options_icons {
+  font-size: 22px;
+  cursor: pointer;
 }

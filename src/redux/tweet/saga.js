@@ -1,19 +1,20 @@
 import { call, put, takeLatest, all, } from "redux-saga/effects"
 
-import { CREATE_TWEET, GET_TWEETS, LIKE_TWEET, COMMENT_TWEET } from "../actions"
+import { CREATE_TWEET, GET_TWEETS, GET_TWEET, LIKE_TWEET, COMMENT_TWEET } from "../actions"
 
 import {
   createTweetSuccess, 
   createTweetError, 
   gettweetsSuccess, 
   gettweetsError, 
+  gettweetSuccess, 
+  gettweetError,
   liketweetSuccess,
   liketweetError,
   commenttweetError,
   commenttweetSuccess } from './actions'
 
 import axios from 'axios'
-import moment from 'moment'
 import { getLocalStorage } from "../../storage"
 
 axios.defaults.withCredentials = true
@@ -31,7 +32,7 @@ await axios.post("http://localhost:5000/tweets/create", { user_id, text },
 .catch((error) => error.response.data);
 
 function* create({ payload }) {
-  const { user_id, text, history, changeLoader } = payload;
+  const { user_id, text, changeLoader } = payload;
   try {
     const tweet = yield call(TweetAsync, user_id, text);
     if (!tweet.message) {
@@ -69,6 +70,32 @@ function* getTweets({ payload }) {
     }  
   } catch (error) {
      yield put(gettweetsError(error));
+  }
+}
+
+/* GET ONE TWEET */
+
+const getTweetAsync = async (tweet_id) =>
+await axios.post("http://localhost:5000/tweets/gettweet", { tweet_id, withCredentials: true }, 
+{
+  headers: {
+    'Authorization': `Bearer ${getLocalStorage('ui').token}` 
+}})
+.then((res) => res.data)
+.catch((error) => error.response.data);
+
+function* getTweet({ payload }) {
+  const { tweet_id } = payload;
+  try {
+    const tweet = yield call(getTweetAsync, tweet_id);
+    if (!tweet.message) {
+      yield put(gettweetSuccess(tweet));
+
+    } else {
+      yield put(gettweetError(tweet.message));
+    }  
+  } catch (error) {
+     yield put(gettweetError(error));
   }
 }
 
@@ -128,7 +155,8 @@ export default function* tweetSaga() {
   yield all ([
     takeLatest(CREATE_TWEET, create),
     takeLatest(GET_TWEETS, getTweets),
+    takeLatest(GET_TWEET, getTweet),
     takeLatest(LIKE_TWEET, liketweetfunction),
-    takeLatest(COMMENT_TWEET, commenttweetfunction)
+    takeLatest(COMMENT_TWEET, commenttweetfunction),
   ])
 }

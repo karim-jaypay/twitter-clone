@@ -2,17 +2,27 @@ import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/actions';
 
-import {Modal, Form, Button} from 'react-bootstrap'
+import {Modal, Form } from 'react-bootstrap'
 
 import { Formik} from 'formik';
 import * as yup from 'yup';
 
-
-import './SignupModal.css'
 import SecondSignup from '../SecondStepSignupModal/SecondSignup';
+
 import logo from '../../public/logo.png'
 
+import '../../Styles/SignupModal.scss'
+
 export default function SignupModal(props) {
+
+    // yup form validation
+    const schema = yup.object().shape({
+    name: yup.string().required('What\'s your name?'),
+    email: yup.string().email('Invalid email').required('Required'),
+    day: yup.number().required('Required'),
+    month: yup.string().required(),
+    year: yup.number().required(),
+    });
     
     const {show, history} = props
 
@@ -38,50 +48,40 @@ export default function SignupModal(props) {
         setFmodal(show)
     }, [show])
 
-        const schema = yup.object().shape({
-        name: yup.string().required('What\'s your name?'),
-        email: yup.string().email('Invalid email').required('Required'),
+        
+    const days = []
+    for(let i = 1;i<32;i++)
+    if(i<10)
+    days.push("0"+i)
+    else days.push(i)
 
-        day: yup.number().required('Required'),
-        month: yup.string().required(),
-        year: yup.number().required(),
+    const years = []
+    for(let i = 1990;i<2021;i++)
+    years.unshift(i)
 
-        });
-        const days = []
-        for(let i = 1;i<32;i++)
-        if(i<10)
-        days.push("0"+i)
-        else days.push(i)
+    // add user function
+    const add_user = (values) => {
+        dispatch(registerUser(values))
+    }
 
-        const years = []
-        for(let i = 1990;i<2021;i++)
-        years.unshift(i)
-
-        const add_user = (values) => {
-            dispatch(registerUser(values))
-            
-        }
-
-    
-    
     return (
         <>
         <Modal
         show={fmodal}
-        
-        aria-labelledby="contained-modal-title-vcenter"
         centered
         >
             <Modal.Header>
-                <Modal.Title style={{textAlign:'center', width:'100%'}}>
+                <Modal.Title className="text-center w-100">
                     <div className="d-flex">
-                        <div className="w-100"><img src={logo} alt="" style={{width:'40px', justifyContent:'center'}}/></div>
-                        <div className="ml-auto" style={{cursor:'pointer'}} onClick={() => props.onHide()}>X</div>
+                        <div className="w-100">
+                            <img className="justify-content-center" src={logo} alt="twitter" style={{width:'40px'}}/>
+                        </div>
+                        <div className="ms-auto" style={{cursor:'pointer'}} onClick={() => props.onHide()}>X</div>
                     </div>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body style={{padding:'8%'}}>
-            <h4 style={{fontWeight:'bold'}}>Create your account</h4>
+                <h4 className="fw-bold">Create your account</h4>
                 <Formik
                 validationSchema={schema}
                 onSubmit={add_user}
@@ -107,7 +107,7 @@ export default function SignupModal(props) {
             <Form noValidate onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Control
-                    className="mt-4 py-4"
+                    className="mt-4"
                     placeholder="Name"
                     type="text"
                     name="name"
@@ -123,7 +123,7 @@ export default function SignupModal(props) {
                 <Form.Group>
                     
                     <Form.Control
-                    className="mt-4 py-4"
+                    className="mt-4"
                     placeholder="Email"
                     type="text"
                     name="email"
@@ -139,11 +139,11 @@ export default function SignupModal(props) {
                 </Form.Group>
                
                
-                <h6 className="mt-5" style={{fontWeight:'bold'}}>Date of birth</h6>
+                <h6 className="mt-5 fw-bold">Date of birth</h6>
                 <div>This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.</div>
-                <Form.Row>
-                <Form.Group>
-                <Form.Control as="select" className="mt-4 selector"
+                <Form.Row className="d-flex mt-4">
+                <Form.Group className="col-lg-4">
+                <Form.Control as="select" className="selector"
                  name="month"
                  value={values.month}
                  onChange={handleChange}
@@ -167,8 +167,8 @@ export default function SignupModal(props) {
                 </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group>
-                <Form.Control as="select" className="mt-4 ml-2 px-4 selector" 
+                <Form.Group className="col-lg-4">
+                <Form.Control as="select" className=" ms-2 px-4 selector" 
                  name="day"
                  value={values.day}
                  onChange={handleChange}
@@ -183,8 +183,8 @@ export default function SignupModal(props) {
                 </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group>
-                <Form.Control as="select" className="mt-4 ml-3 selector"
+                <Form.Group className="col-lg-4">
+                <Form.Control as="select" className="ms-3 selector"
                  name="year"
                  value={values.year}
                  onChange={handleChange}
@@ -200,7 +200,7 @@ export default function SignupModal(props) {
                 </Form.Group>
                 
                 </Form.Row>
-                <Button disabled={!isValid || values.name.length === 0} type="submit" className="mt-4 py-2" style={{background:'#1da1f2', width:'100%',fontWeight:'bold', borderRadius:'30px'}}>Continue</Button>
+                <button disabled={!isValid || values.name.length === 0} type="submit" className="mt-4 py-2 main__btn--primary w-100">Continue</button>
 
             </Form>
                     )}

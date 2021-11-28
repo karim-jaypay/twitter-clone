@@ -5,6 +5,9 @@ import { CREATE_TWEET,
     GET_TWEETS, 
     GET_TWEETS_ERROR, 
     GET_TWEETS_SUCCESS, 
+    GET_TWEET, 
+    GET_TWEET_ERROR, 
+    GET_TWEET_SUCCESS, 
     LIKE_TWEET,
     LIKE_TWEET_SUCCESS,
     LIKE_TWEET_ERROR,
@@ -15,6 +18,7 @@ import { CREATE_TWEET,
 const initialState = {
     data: '',
     tweets: '',
+    tweet: '',
     message: ''
 }
 
@@ -41,6 +45,19 @@ export default (state = initialState, action) => {
             ...state, tweets: action.payload
         }
         case GET_TWEETS_ERROR:
+        return  {
+            ...state, message: action.payload
+        }
+
+        case GET_TWEET:
+        return  {
+            ...state,
+        }
+        case GET_TWEET_SUCCESS:
+        return  {
+            ...state, tweet: action.payload
+        }
+        case GET_TWEET_ERROR:
         return  {
             ...state, message: action.payload
         }

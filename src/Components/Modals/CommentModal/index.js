@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useState} from 'react'
+import { useDispatch } from 'react-redux';
 import { getLocalStorage } from '../../../storage';
 
-import {Modal, Form, Button} from 'react-bootstrap'
+import {Modal, Button} from 'react-bootstrap'
 
 
 import './CommentModal.css'
@@ -16,7 +16,7 @@ import { commenttweet } from '../../../redux/actions';
 
 export default function CommentModal(props) {
     
-    const {show, tweetId, tweetName, tweetUsername, tweetDate, tweet, onHide, history} = props
+    const {show, tweetId, tweetName, tweetUsername, tweetDate, tweet, onHide, history, changeCommentCount} = props
 
     const UserInfo = getLocalStorage('ui')
 
@@ -39,7 +39,9 @@ export default function CommentModal(props) {
     const add_comment = (values) => {
         dispatch(commenttweet(values))
         setTweetInfo({ text: '' })
+        changeCommentCount()
         onHide()
+
         
     }
 
@@ -64,7 +66,7 @@ export default function CommentModal(props) {
             <div>
                 <div className="d-flex">
                     <div >
-                        <img className="profile-image" src={`http://localhost:5000/` + getLocalStorage('ui').picture} alt="user profile" />
+                        <img className="profile-image" src={`http://localhost:5000/` + getLocalStorage('ui').picture} alt="user pic" />
                         <div className="vertical_line" />
                     </div>
 
@@ -81,19 +83,19 @@ export default function CommentModal(props) {
                 </div>
 
                 <div className="d-flex">
-                <img className="profile-image mb-auto" src={`http://localhost:5000/` + UserInfo.picture} alt="profile picture" />
+                <img className="profile-image mb-auto" src={`http://localhost:5000/` + UserInfo.picture} alt="profile pic" />
                 
-                <TextareaAutosize className="ml-2 mt-2 text_area" rows="4" name="text" value={tweetInfo.text} onChange={handleChange} aria-label="empty textarea" placeholder="Tweet Your Reply" />
+                <TextareaAutosize className="ml-2 mt-2 text_area" minRows="4" name="text" value={tweetInfo.text} onChange={handleChange} aria-label="empty textarea" placeholder="Tweet Your Reply" />
                 </div>
 
                 <div className="image-tweet">
                     <div className="d-flex tweet-options ml-3">
-                        <img width="20" height="20" src={image} alt="upload image" />
+                        <img width="20" height="20" src={image} alt="upload img" />
                         <img width="20" height="20" src={gif} alt="upload gif" />
                         <img width="20" height="20" src={poll} alt="upload poll" />
                         <img width="20" height="20" src={emoji} alt="upload emoji" />
                     </div>
-                    <Button className="d-block py-1 px-3 ml-auto tweet_btn" onClick={() => add_comment({ user_id: UserInfo.id, tweet_id: tweetId, comment: tweetInfo.text }) } disabled={(!tweetInfo || !tweetInfo.text) ? true : false}>Tweet</Button>
+                    <Button className="d-block py-1 px-3 ml-auto tweet_btn" onClick={() => add_comment({ user_id: UserInfo._id, tweet_id: tweetId, comment: tweetInfo.text }) } disabled={(!tweetInfo || !tweetInfo.text) ? true : false}>Tweet</Button>
 
                 </div>
             </div>

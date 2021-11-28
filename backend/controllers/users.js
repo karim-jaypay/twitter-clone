@@ -8,45 +8,6 @@ import { getToken, COOKIE_OPTIONS, getRefreshToken } from '../authenticate.js'
 const Joi = JoiBase.extend(JoiDate)
 
 
-
- export const Login = async (req, res) => {
-
-    const token = getToken({ _id: req.user._id })
-    const refreshToken = getRefreshToken({ _id: req.user._id })
-    try {
-        await UserMessage.findOne({$or: [{
-            email: req.body.email
-        }, {
-            username: req.body.username
-        }]}, function( error ,user) {
-            if(user){
-                
-                bcrypt.compare( req.body.password, user.password, function(err, resp) {
-                    if(resp){
-                        user.refreshToken.push({ refreshToken })
-                        user.save((err, user) => {
-                            if (err) {
-                              res.statusCode = 500
-                              res.send(err)
-                            } else {
-                              res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
-                              res.send({ success: true, token })
-                            }
-                        })
-                    } else res.send({message: 'incorrect username or password'})
-                });
-            } else {
-                res.send({message: 'incorrect username or password'})
-            }
-        })
-
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-        
-    }
-} 
-
-
 export const createUser = async (req, res) => {
     const schema = Joi.object({
         name: Joi.string()
@@ -55,7 +16,7 @@ export const createUser = async (req, res) => {
         email: Joi.string()
             .required(),
         birth: Joi.date()
-            .format("DD/MM/YYYY")
+            .format("YYYY/MM/DD")
             .required(),
     })
 

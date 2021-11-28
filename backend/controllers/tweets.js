@@ -127,6 +127,104 @@ export const getAllTweets = async (req, res) => {
     }
 }
 
+
+export const getTweet = async (req, res) => {
+
+    const { tweet_id } = req.body
+
+    const logged_user_id = req.user._id
+
+
+    try {
+
+        const tweet = await tweets.aggregate([
+            { $match: { _id: mongoose.Types.ObjectId(tweet_id) }},
+            {
+              $lookup: {
+                from: "usermessages",        //must be collection name for posts
+                let: { userid: "$user_id" },    
+                pipeline : [
+                    { $match: { $expr: { $eq: [ "$_id", "$$userid" ] } }, },
+                    { $project : { username:1, name:1 } }
+                ],
+                as: "user"
+              },
+            },
+            {
+                $unwind: "$user"
+            },
+
+            {
+                $lookup: {
+                    from: "tweetlikes",        //must be collection name for posts
+                    let: {  tweetid: mongoose.Types.ObjectId(tweet_id) , userid: mongoose.Types.ObjectId(logged_user_id) },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$user_id", "$$userid" ] },
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                    ],
+                    as: "is_liked"
+                  }
+            },
+
+            {
+                $lookup: {
+                    from: "tweetlikes",        //must be collection name for posts
+                    let: {  tweetid: mongoose.Types.ObjectId(tweet_id) },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                    ],
+                    as: "likes"
+                  }
+            },
+
+            {
+                $lookup: {
+                    from: "tweetcomments",        //must be collection name for posts
+                    let: {  tweetid: mongoose.Types.ObjectId(tweet_id) },    
+                    pipeline : [
+                        { $match: { $expr: { 
+                            $and: [
+                            { $eq: [ "$tweet_id", "$$tweetid" ]},
+                            ]
+                           }, 
+                         },
+                        },
+                    ],
+                    as: "comments"
+                  }
+            },
+            
+             {
+                $addFields: {
+                    is_liked: { $cond: { if: { $anyElementTrue: [ "$is_liked" ] }, then: true, else: false } },
+                    likes: { $size: "$likes" },
+                    comments: { $size: "$comments"}
+                }
+            },
+
+           
+          ]);
+
+        if(tweet)
+            res.status(200).send(tweet)
+        else res.status(200).send({ message: 'no tweets' })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const likeTweet = async (req,res) => {
 
     const { tweet_id, user_id } = req.body
@@ -172,6 +270,6 @@ export const commentTweet = async (req,res) => {
         
 
     } catch (error) {
-        res.status(200).send({message: err})
+        res.status(200).send({message: error})
     }
 }
