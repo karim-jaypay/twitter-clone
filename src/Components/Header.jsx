@@ -1,6 +1,5 @@
 import { Navbar } from 'react-bootstrap';
 
-import '../../App.css'
 export default function Header({ headerTitle, back, history }){
   
   return(

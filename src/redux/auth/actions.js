@@ -1,11 +1,11 @@
 import {
-    LOGIN_USER,
-    LOGIN_USER_SUCCESS,
-    LOGIN_USER_ERROR,
-    REGISTER_USER,
-    REGISTER_USER_SUCCESS,
-    REGISTER_USER_ERROR,
-    /* LOGOUT_USER
+  LOGIN_USER,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
+  REGISTER_USER_FIRST_STEP,
+  REGISTER_USER_SUCCESS,
+  REGISTER_USER_FIRST_STEP_ERROR,
+  /* LOGOUT_USER
     FORGOT_PASSWORD,
     FORGOT_PASSWORD_SUCCESS,
     FORGOT_PASSWORD_ERROR,
@@ -13,40 +13,35 @@ import {
     RESET_PASSWORD_SUCCESS,
     RESET_PASSWORD_ERROR,
     UPDATE_AUTH_USER  */
-  } from '../actions';
+} from "../actions";
 
-  /* LOGIN */
-  
-  export const loginUser = (user) => ({
-    type: LOGIN_USER,
-    payload: user
-  });
-  export const loginUserSuccess = (user) => ({
-    type: LOGIN_USER_SUCCESS,
-    payload: user
-  });
-  export const loginUserError = (message) => ({
-    type: LOGIN_USER_ERROR,
-    payload: message
-  }); 
+/* LOGIN */
 
-  /* REGISTER */
+export const loginUser = (user) => ({
+  type: LOGIN_USER,
+  payload: user,
+});
+export const loginUserSuccess = (user) => ({
+  type: LOGIN_USER_SUCCESS,
+  payload: user,
+});
+export const loginUserError = (message) => ({
+  type: LOGIN_USER_ERROR,
+  payload: message,
+});
 
-  export const registerUser = (user) => ({
-    type: REGISTER_USER,
-    payload: user,
-  });
-  export const registerUserSuccess = (user) => ({
-    type: REGISTER_USER_SUCCESS,
-    payload: user
-  });
-  export const registerUserError = (message) => ({
-    type: REGISTER_USER_ERROR,
-    payload: message
-  });
-  
-  
- /*  export const updateUser = (data) => ({
+/* REGISTER */
+
+export const registerUserFirstStep = (user) => ({
+  type: REGISTER_USER_FIRST_STEP,
+  payload: user,
+});
+export const registerUserFirstStepError = (error) => ({
+  type: REGISTER_USER_FIRST_STEP_ERROR,
+  payload: error,
+});
+
+/*  export const updateUser = (data) => ({
     type: UPDATE_AUTH_USER,
     payload: data
   });
@@ -82,4 +77,3 @@ import {
     type: LOGOUT_USER,
     payload: { history },
   }); */
-  

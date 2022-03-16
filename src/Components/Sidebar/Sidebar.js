@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
 import { useLocation } from 'react-router'
 
-import '../../App.css'
-
 import logo from '../../public/twitterlogo.png'
 import explore from '../../public/hashtag.svg'
 import feather from '../../public/feather.svg'
