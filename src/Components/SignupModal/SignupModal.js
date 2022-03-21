@@ -43,10 +43,7 @@ function SignupModal({ show, history, onHide, result }) {
   useEffect(() => {
     if (result?.error) {
       setEmail_err(true);
-    } /*  else {
-      setShowModal(true);
-      setModal(false);
-    } */
+    }
   }, [result]);
 
   // yup form validation
@@ -60,6 +57,11 @@ function SignupModal({ show, history, onHide, result }) {
   // add user function
   const add_user = (values) => {
     dispatch(registerUserFirstStep(values));
+    console.log(result.error);
+    /*  if (email_err !== true) {
+      setShowModal(true);
+      setModal(false);
+    } */
   };
   const formik = useFormik({
     initialValues: {
@@ -72,7 +74,6 @@ function SignupModal({ show, history, onHide, result }) {
     validationSchema: schema,
     onSubmit: (values) => add_user(values),
   });
-  console.log(result);
 
   return (
     <>
@@ -205,14 +206,14 @@ function SignupModal({ show, history, onHide, result }) {
           </form>
         </DialogContent>
       </Dialog>
-      {/*  <SecondSignup
+      <SecondSignup
         show={showModal}
         history={history}
         onHide={() => {
           setShowModal(false);
         }}
-        data={result.user}
-      /> */}
+        data={result?.user}
+      />
     </>
   );
 }
