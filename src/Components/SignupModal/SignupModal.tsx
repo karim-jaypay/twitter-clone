@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { connect, useDispatch } from "react-redux";
 import { registerUserFirstStep } from "../../redux/actions";
 
 import {
@@ -26,14 +26,14 @@ import logo from "../../public/logo.png";
 import "../../Styles/SignupModal.scss";
 import CustomButton from "../CustomButton";
 
-function SignupModal({ show, history, onHide, result }) {
-  const dispatch = useDispatch();
+interface ISignUpModal {
+  show: boolean;
+  onHide: () => void;
+  result: any;
+}
 
-  // current modal
-  const [modal, setModal] = useState(show);
-  const onClose = () => {
-    setModal(false);
-  };
+function SignupModal({ show, onHide, result }: ISignUpModal) {
+  const dispatch = useDispatch();
 
   // second sign up modal
   const [showModal, setShowModal] = useState(false);
@@ -55,7 +55,7 @@ function SignupModal({ show, history, onHide, result }) {
     year: yup.number().required(),
   });
   // add user function
-  const add_user = (values) => {
+  const add_user = (values: any) => {
     dispatch(registerUserFirstStep(values));
     console.log(result.error);
     /*  if (email_err !== true) {
@@ -75,12 +75,20 @@ function SignupModal({ show, history, onHide, result }) {
     onSubmit: (values) => add_user(values),
   });
 
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 224,
+        width: 130,
+      },
+    },
+  };
+
   return (
     <>
       <Dialog
-        open={modal}
-        onClose={onClose}
-        fullWidth={600}
+        open={show}
+        onClose={onHide}
         onBackdropClick={onHide}
         PaperProps={{ style: { overflowX: "hidden" } }}
       >
@@ -89,7 +97,10 @@ function SignupModal({ show, history, onHide, result }) {
             <div
               className="ms-auto"
               style={{ cursor: "pointer" }}
-              onClick={() => onHide()}
+              onClick={() => {
+                onHide();
+                formik.resetForm();
+              }}
             >
               X
             </div>
@@ -118,8 +129,8 @@ function SignupModal({ show, history, onHide, result }) {
               label="Name"
               value={formik.values.name}
               onChange={formik.handleChange}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
+              error={Boolean(formik.errors.name)}
+              helperText={formik.errors.name}
             />
             <TextField
               fullWidth
@@ -131,13 +142,10 @@ function SignupModal({ show, history, onHide, result }) {
                 formik.handleChange(e);
                 setEmail_err(false);
               }}
-              error={
-                formik.touched.email &&
-                (Boolean(formik.errors.email) || email_err)
-              }
+              error={Boolean(formik.errors.email) || email_err}
               helperText={
                 formik.errors.email
-                  ? "required"
+                  ? "Email Required"
                   : email_err && "Email already taken"
               }
             />
@@ -173,9 +181,10 @@ function SignupModal({ show, history, onHide, result }) {
                     onChange={formik.handleChange}
                     value={formik.values.day}
                     label="Day *"
+                    MenuProps={MenuProps}
                   >
-                    {days.map((day) => (
-                      <MenuItem key={day} value={day}>
+                    {days.map((day: any) => (
+                      <MenuItem key={`day${day}`} value={day}>
                         {day}
                       </MenuItem>
                     ))}
@@ -190,12 +199,15 @@ function SignupModal({ show, history, onHide, result }) {
                     onChange={formik.handleChange}
                     value={formik.values.year}
                     label="Year *"
+                    MenuProps={MenuProps}
                   >
-                    {years.map((year) => (
-                      <MenuItem key={year} value={year}>
-                        {year}
-                      </MenuItem>
-                    ))}
+                    {years()
+                      .reverse()
+                      .map((year: any) => (
+                        <MenuItem key={year} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -208,7 +220,6 @@ function SignupModal({ show, history, onHide, result }) {
       </Dialog>
       <SecondSignup
         show={showModal}
-        history={history}
         onHide={() => {
           setShowModal(false);
         }}
@@ -218,7 +229,7 @@ function SignupModal({ show, history, onHide, result }) {
   );
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: any) {
   const { auth } = state;
   return { result: auth };
 }

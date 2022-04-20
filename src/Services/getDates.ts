@@ -1,11 +1,13 @@
-const days = [];
-const years = [];
+const days = [] as Number[];
 
 for (let i = 1; i < 32; i++)
-  if (i < 10) days.push("0" + i);
+  if (i < 10) days.push(0 + i);
   else days.push(i);
 
-for (let i = 1990; i < 2021; i++) years.unshift(i);
+const years = () => {
+  const year = new Date().getFullYear();
+  return Array.from({ length: 100 }, (v, i) => year - 100 + i + 1);
+};
 
 const months = [
   "January",

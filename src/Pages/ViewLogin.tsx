@@ -10,16 +10,15 @@ import "../Styles/login.scss";
 import logo from "../public/logo.png";
 import CustomButton from "../Components/CustomButton";
 
-export default function Login(props) {
-  const { history } = props;
+export default function Login() {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = () => dispatch(loginUser({ email, password, history }));
+  // const login = () => dispatch(loginUser({ email, password }));
 
-  const result = useSelector((state) => state.auth);
+  const result = useSelector((state: any) => state.auth);
 
   return (
     <Grid className="login-contents">
@@ -42,14 +41,14 @@ export default function Login(props) {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {result.message && result.message !== "success" && (
+        {result?.message && result.message !== "success" && (
           <p style={{ color: "red", marginBottom: 0 }}>
             Incorrect username or password
           </p>
         )}
-        <CustomButton onClick={login} sx={{ marginTop: 3 }}>
+        {/* <CustomButton onClick={login} sx={{ marginTop: 3 }}>
           Login
-        </CustomButton>
+        </CustomButton> */}
 
         <p className="text-center">
           <Link to="">Forgot Password?</Link> .{" "}

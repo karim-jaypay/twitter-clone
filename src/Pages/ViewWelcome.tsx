@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import SignupModal from "../Components/SignupModal/SignupModal";
 
@@ -6,13 +6,11 @@ import welcome from "../public/welcome.png";
 import logo from "../public/logo.png";
 import { Grid } from "@mui/material";
 import CustomButton from "../Components/CustomButton";
+import { useNavigate } from "react-router-dom";
 
-export default function Welcome(props) {
+export default function Welcome() {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-
-  const togglemodal = () => {
-    setShowModal(!showModal);
-  };
 
   //bottom links
   const bottomLinks = [
@@ -32,7 +30,7 @@ export default function Welcome(props) {
     "Developers",
     "Directory",
     "Settings",
-    "@ 2021 Twitter, Inc.",
+    "@ 2022 Twitter, Inc.",
   ];
 
   return (
@@ -43,10 +41,22 @@ export default function Welcome(props) {
             src={welcome}
             alt="welcome"
             className="w-100"
-            style={{ height: 721, objectFit: "cover" }}
+            style={{
+              objectFit: "cover",
+              height: "95vh",
+            }}
           />
         </Grid>
-        <Grid item md={6} p={5}>
+        <Grid
+          item
+          md={6}
+          p={5}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
           <img
             src={logo}
             alt="twitter"
@@ -59,14 +69,14 @@ export default function Welcome(props) {
 
           <h2 style={{ fontSize: "35px" }}>Join Twitter today.</h2>
 
-          <Grid item mt={5}>
+          <Grid item mt={5} direction="column" style={{ display: "flex" }}>
             <CustomButton onClick={() => setShowModal(true)}>
               Sign up
             </CustomButton>
             <CustomButton
               sx={{ marginTop: 4 }}
               variant={"outlined"}
-              href="/login"
+              onClick={() => navigate("/login")}
             >
               Sign in
             </CustomButton>
@@ -91,12 +101,7 @@ export default function Welcome(props) {
         ))}
       </Grid>
 
-      <SignupModal
-        key={showModal}
-        show={showModal}
-        history={props.history}
-        onHide={() => togglemodal()}
-      />
+      <SignupModal show={showModal} onHide={() => setShowModal(!showModal)} />
     </>
   );
 }

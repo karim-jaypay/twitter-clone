@@ -1,55 +1,47 @@
-import React, {useState} from 'react'
-import { useDispatch } from 'react-redux';
-import { getLocalStorage } from '../../../storage';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
-import {Modal, Button} from 'react-bootstrap'
+import { Modal, Button } from "react-bootstrap";
 
+import "./CommentModal.css";
+import { TextareaAutosize } from "@material-ui/core";
 
-import './CommentModal.css'
-import { TextareaAutosize } from '@material-ui/core';
+import image from "../../../public/image.svg";
+import gif from "../../../public/gif.svg";
+import poll from "../../../public/poll.svg";
+import emoji from "../../../public/happy.svg";
+import { commenttweet } from "../../../redux/actions";
 
-import image from '../../../public/image.svg'
-import gif from '../../../public/gif.svg'
-import poll from '../../../public/poll.svg'
-import emoji from '../../../public/happy.svg'
-import { commenttweet } from '../../../redux/actions';
+export default function CommentModal() {
+  // const {show, tweetId, tweetName, tweetUsername, tweetDate, tweet, onHide, history, changeCommentCount} = props
 
-export default function CommentModal(props) {
-    
-    const {show, tweetId, tweetName, tweetUsername, tweetDate, tweet, onHide, history, changeCommentCount} = props
+  // const UserInfo = getLocalStorage('ui')
 
-    const UserInfo = getLocalStorage('ui')
+  // /* states */
+  // const [tweetInfo, setTweetInfo] = useState({
+  //     text:''
+  // })
 
-    /* states */
-    const [tweetInfo, setTweetInfo] = useState({
-        text:''
-    })
+  // /* on change */
+  // const handleChange = (e) => {
+  //     const { name, value } = e.target
+  //     setTweetInfo({...tweetInfo, [name]: value})
 
-    /* on change */
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setTweetInfo({...tweetInfo, [name]: value})
+  // }
 
-    }
+  // const dispatch = useDispatch()
 
-    const dispatch = useDispatch()
+  // const add_comment = (values) => {
+  //     dispatch(commenttweet(values))
+  //     setTweetInfo({ text: '' })
+  //     changeCommentCount()
+  //     onHide()
 
-       
+  // }
 
-    const add_comment = (values) => {
-        dispatch(commenttweet(values))
-        setTweetInfo({ text: '' })
-        changeCommentCount()
-        onHide()
-
-        
-    }
-
-    
-    
-    return (
-        <>
-        <Modal
+  return (
+    <>
+      {/* <Modal
         show={show}
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -103,9 +95,7 @@ export default function CommentModal(props) {
             </Modal.Body>
 
             
-        </Modal>
-        
-        </>
-        
-    )
+        </Modal> */}
+    </>
+  );
 }

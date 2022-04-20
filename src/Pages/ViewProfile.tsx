@@ -1,28 +1,26 @@
-import React from 'react';
-import moment from 'moment';
+import React from "react";
+import moment from "moment";
 
-import { IoCalendarOutline, IoLocationOutline } from 'react-icons/io5'
-import { BiCake } from "react-icons/bi"
+import { IoCalendarOutline, IoLocationOutline } from "react-icons/io5";
+import { BiCake } from "react-icons/bi";
 
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 
-import '../Styles/profile.scss'
-import { picture, userInfo } from '../variables';
+import "../Styles/profile.scss";
 
 function Profile() {
-    
-  const [value, setValue] = React.useState('1');
+  // const [value, setValue] = React.useState('1');
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
+  // };
 
-  const birth = moment(new Date(userInfo.birth))
-  const created = moment( new Date(userInfo.createdAt) )
+  // const birth = moment(new Date(userInfo.birth))
+  // const created = moment( new Date(userInfo.createdAt) )
 
   /* const toggleTab = (index) => {
     setToggleState(index);
@@ -74,10 +72,9 @@ function Profile() {
         result2 = await result2.json();
         setDatacomments(result2);
     }  */
-    return(
-        
-        <div id="UserProfile">
-          <div className="cover">
+  return (
+    <div id="UserProfile">
+      {/* <div className="cover">
           
           </div>
 
@@ -136,9 +133,9 @@ function Profile() {
               <TabPanel value="4">Item four</TabPanel>
             </TabContext>
           </Box>
-          </div>
-        </div>
-    )
+          </div> */}
+    </div>
+  );
 }
 
 export default Profile;

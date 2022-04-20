@@ -1,59 +1,61 @@
-import React, { useState } from 'react'
-import moment from 'moment';
-import {IoHeartOutline,IoHeart,IoChatbubbleOutline, IoRepeatOutline, IoPushOutline} from 'react-icons/io5';
-import { useDispatch } from 'react-redux';
+import React, { useState } from "react";
+import moment from "moment";
+import {
+  IoHeartOutline,
+  IoHeart,
+  IoChatbubbleOutline,
+  IoRepeatOutline,
+  IoPushOutline,
+} from "react-icons/io5";
+import { useDispatch } from "react-redux";
 
-import { liketweet } from '../../redux/actions'
+import { liketweet } from "../../redux/actions";
 
-import CommentModal from '../Modals/CommentModal'
-import { getLocalStorage } from '../../storage';
+import CommentModal from "../Modals/CommentModal";
 
-function Tweets(props) {
+function Tweets() {
+  // const userInfo = getLocalStorage('ui')
 
-    const userInfo = getLocalStorage('ui')
+  // const dispatch = useDispatch()
 
-    const dispatch = useDispatch()
+  // const { data, history } = props
 
-    const { data, history } = props
+  // const [isLiked, setIsLiked] = useState(data.is_liked)
 
-    const [isLiked, setIsLiked] = useState(data.is_liked)
+  // const [likeCount, setLikeCount] = useState(data.likes)
+  // const [commentCount, setCommentCount] = useState(data.comments)
 
-    const [likeCount, setLikeCount] = useState(data.likes)
-    const [commentCount, setCommentCount] = useState(data.comments)
+  // const [commentDetail, setCommentDetail] = useState({
+  //     show: false,
+  //     id:'',
+  //     name: '',
+  //     username: '',
+  //     date: '',
+  //     tweet: '',
+  // })
 
-    const [commentDetail, setCommentDetail] = useState({
-        show: false,
-        id:'',
-        name: '',
-        username: '',
-        date: '',
-        tweet: '',
-    })
+  // const startDate = moment(data.createdAt);
+  // const timeEnd = moment();
+  // const diff = timeEnd.diff(startDate);
+  // const diffDuration = moment.duration(diff);
 
-    const startDate = moment(data.createdAt);
-    const timeEnd = moment();
-    const diff = timeEnd.diff(startDate);
-    const diffDuration = moment.duration(diff);
+  // const like_tweet = (tweet_id, user_id) => {
 
+  //     // reduce number of comments by 1
+  //     if(isLiked)
+  //     setLikeCount(likeCount - 1)
+  //     else setLikeCount(likeCount + 1)
 
-    const like_tweet = (tweet_id, user_id) => {
-        
-        // reduce number of comments by 1
-        if(isLiked)
-        setLikeCount(likeCount - 1)
-        else setLikeCount(likeCount + 1)
+  //     // remove like
+  //     setIsLiked(!isLiked)
 
-        // remove like 
-        setIsLiked(!isLiked)
+  //     // remove like from database
+  //     dispatch(liketweet( tweet_id, user_id ))
+  // }
 
-        // remove like from database
-        dispatch(liketweet( tweet_id, user_id ))
-    }
-
-
-    return (
-        <>
-        <div className="tweet_div" onClick={() => {history.push(`/${data.user.username}/tweet/${data._id}`)} }>
+  return (
+    <>
+      {/* <div className="tweet_div" onClick={() => {history.push(`/${data.user.username}/tweet/${data._id}`)} }>
             <div className="p-3">
                 <div className="d-flex">
                     <div className="text-center" style={{width:'10%'}}>
@@ -124,9 +126,9 @@ function Tweets(props) {
         onHide={() => setCommentDetail({ ...commentDetail, show: !commentDetail.show })}
         changeCommentCount={ () => setCommentCount(commentCount + 1)}
         history={history}
-        />
-        </>
-    )
+        /> */}
+    </>
+  );
 }
 
-export default Tweets
+export default Tweets;

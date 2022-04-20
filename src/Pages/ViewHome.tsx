@@ -12,52 +12,51 @@ import { createTweet, gettweets } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 
 import Tweets from "../Components/Tweets";
-import { getLocalStorage } from "../storage";
 
-export default function Home(props) {
-  const userInfo = getLocalStorage("ui");
+export default function Home() {
+  // const userInfo = getLocalStorage("ui");
 
-  console.log(userInfo);
+  // console.log(userInfo);
 
-  /* dispatch */
-  const dispatch = useDispatch();
-  /* get history */
-  const { history } = props;
+  // /* dispatch */
+  // const dispatch = useDispatch();
+  // /* get history */
+  // const { history } = props;
 
-  /* states */
-  const [tweet, setTweet] = useState({
-    text: "",
-  });
+  // /* states */
+  // const [tweet, setTweet] = useState({
+  //   text: "",
+  // });
 
-  /* on change */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTweet({ ...tweet, [name]: value });
-  };
+  // /* on change */
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setTweet({ ...tweet, [name]: value });
+  // };
 
-  /* tweet button function */
-  const tweetAction = () => {
-    setTweet({ text: "" });
-    dispatch(createTweet({ user_id: userInfo._id, text: tweet.text, history }));
-  };
+  // /* tweet button function */
+  // const tweetAction = () => {
+  //   setTweet({ text: "" });
+  //   dispatch(createTweet({ user_id: userInfo._id, text: tweet.text, history }));
+  // };
 
-  useEffect(() => {
-    dispatch(gettweets({ user_id: userInfo._id }));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(gettweets({ user_id: userInfo._id }));
+  // }, []);
 
-  /* dispatch(gettweets({ user_id: userInfo.id })) */
-  const alltweets = useSelector((state) =>
-    state.tweet ? state.tweet.tweets : ""
-  );
+  // /* dispatch(gettweets({ user_id: userInfo.id })) */
+  // const alltweets = useSelector((state) =>
+  //   state.tweet ? state.tweet.tweets : ""
+  // );
 
-  /* get all tweets function */
-  const getalltweets = useMemo(() => {
-    return alltweets;
-  }, [alltweets]);
+  // /* get all tweets function */
+  // const getalltweets = useMemo(() => {
+  //   return alltweets;
+  // }, [alltweets]);
 
   return (
     <div>
-      <div className="tweet-box">
+      {/* <div className="tweet-box">
         <div className="d-flex">
           <img
             className="profile-image mb-auto"
@@ -95,7 +94,7 @@ export default function Home(props) {
           getalltweets.map((item) => {
             return <Tweets key={item._id} data={item} history={history} />;
           })}
-      </div>
+      </div> */}
     </div>
   );
 }
