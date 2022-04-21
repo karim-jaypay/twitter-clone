@@ -11,7 +11,7 @@ export const createUser = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(2).required(),
     email: Joi.string().required(),
-    birth: Joi.date().format("YYYY/MM/DD").required(),
+    birthDate: Joi.date().format("YYYY-MM-DD").required(),
   });
 
   const { error } = schema.validate(req.body);
@@ -23,16 +23,26 @@ export const createUser = async (req, res) => {
 
   try {
     await UserMessage.findOne(
-      { username: user.username },
-      function (error, user) {
-        if (user) {
-          res.status(404).send({ error: "Account already created" });
-        } else {
+      { email: user.email },
+      function (error, userWithUsername) {
+        if (!userWithUsername) {
           newUser.save();
+          res.status(200).json(newUser);
+        } else if (userWithUsername) {
+          if (userWithUsername?.username) {
+            res.status(404).send("Account already created");
+          }
+          userWithUsername.name = user.name;
+          userWithUsername.email = user.email;
+          userWithUsername.birthDate = user.birthDate;
+          userWithUsername.save();
           res.status(200).json(newUser);
         }
       }
     );
+
+    //
+    //
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
@@ -108,9 +118,9 @@ export const Logout = async (req, res) => {
 
   try {
     await UserMessage.findById(req.user._id).then(
-      (user) => {
+      user => {
         const tokenIndex = user.refreshToken.findIndex(
-          (item) => item.refreshToken === refreshToken
+          item => item.refreshToken === refreshToken
         );
 
         if (tokenIndex !== -1) {
@@ -127,7 +137,7 @@ export const Logout = async (req, res) => {
           }
         });
       },
-      (err) => console.log(err)
+      err => console.log(err)
     );
   } catch (err) {
     console.log(err);

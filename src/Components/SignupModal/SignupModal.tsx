@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
-import { registerUserFirstStep } from "../../redux/actions";
 
 import {
   Dialog,
@@ -15,7 +13,6 @@ import {
 } from "@mui/material";
 
 import { useFormik } from "formik";
-import * as yup from "yup";
 
 import { years, days, months } from "../../Services/getDates";
 
@@ -23,17 +20,20 @@ import SecondSignup from "../SecondStepSignupModal/SecondSignup";
 
 import logo from "../../public/logo.png";
 
-import "../../Styles/SignupModal.scss";
 import CustomButton from "../CustomButton";
+import { signupSchema } from "../../Yup/Schemas";
+import { useFirstSignUpMutation } from "../../redux/auth";
+import moment from "moment";
+import CustomAlert from "../Alert";
 
 interface ISignUpModal {
   show: boolean;
   onHide: () => void;
-  result: any;
+  result?: any;
 }
 
-function SignupModal({ show, onHide, result }: ISignUpModal) {
-  const dispatch = useDispatch();
+const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
+  const [addUser, { data, error }] = useFirstSignUpMutation();
 
   // second sign up modal
   const [showModal, setShowModal] = useState(false);
@@ -46,18 +46,27 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
     }
   }, [result]);
 
-  // yup form validation
-  const schema = yup.object().shape({
-    name: yup.string().required("What's your name?"),
-    email: yup.string().email("Invalid email").required("Required"),
-    day: yup.number().required("Required"),
-    month: yup.string().required(),
-    year: yup.number().required(),
-  });
+  useEffect(() => {
+    if (data) {
+      setShowModal(true);
+      onHide();
+    }
+  }, [data]);
+
   // add user function
-  const add_user = (values: any) => {
-    dispatch(registerUserFirstStep(values));
-    console.log(result.error);
+  const add_user = async (values: any) => {
+    const copyValues = {
+      ...values,
+      birthDate: `${values.year}-${moment().month(values.month).format("MM")}-${
+        values.day
+      }`,
+    };
+    delete copyValues.year;
+    delete copyValues.month;
+    delete copyValues.day;
+
+    await addUser(copyValues);
+
     /*  if (email_err !== true) {
       setShowModal(true);
       setModal(false);
@@ -71,10 +80,11 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
       day: "",
       year: "",
     },
-    validationSchema: schema,
-    onSubmit: (values) => add_user(values),
+    validationSchema: signupSchema,
+    onSubmit: values => add_user(values),
   });
 
+  // Mui select dropdown style
   const MenuProps = {
     PaperProps: {
       style: {
@@ -86,10 +96,13 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
 
   return (
     <>
+      {error?.data && <CustomAlert severity="error">{error?.data}</CustomAlert>}
       <Dialog
         open={show}
-        onClose={onHide}
-        onBackdropClick={onHide}
+        onBackdropClick={() => {
+          onHide();
+          formik.resetForm();
+        }}
         PaperProps={{ style: { overflowX: "hidden" } }}
       >
         <DialogTitle className="text-center w-100">
@@ -138,7 +151,7 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
               label="Email"
               style={{ marginBottom: "3%" }}
               value={formik.values.email}
-              onChange={(e) => {
+              onChange={e => {
                 formik.handleChange(e);
                 setEmail_err(false);
               }}
@@ -157,15 +170,16 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
             </div>
             <Grid container spacing={2} style={{ margin: "5% 0" }}>
               <Grid xs={4}>
-                <FormControl required sx={{ m: 1, minWidth: 120 }}>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Month</InputLabel>
                   <Select
                     name="month"
                     value={formik.values.month}
                     label="Month *"
                     onChange={formik.handleChange}
+                    error={Boolean(formik.errors.month)}
                   >
-                    {months.map((month) => (
+                    {months.map(month => (
                       <MenuItem key={month} value={month}>
                         {month}
                       </MenuItem>
@@ -174,7 +188,7 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
                 </FormControl>
               </Grid>
               <Grid xs={4}>
-                <FormControl required sx={{ m: 1, minWidth: 120 }}>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Day</InputLabel>
                   <Select
                     name="day"
@@ -182,6 +196,7 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
                     value={formik.values.day}
                     label="Day *"
                     MenuProps={MenuProps}
+                    error={Boolean(formik.errors.day)}
                   >
                     {days.map((day: any) => (
                       <MenuItem key={`day${day}`} value={day}>
@@ -192,7 +207,7 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
                 </FormControl>
               </Grid>
               <Grid xs={4}>
-                <FormControl required sx={{ m: 1, minWidth: 120 }}>
+                <FormControl sx={{ m: 1, minWidth: 120 }}>
                   <InputLabel>Year</InputLabel>
                   <Select
                     name="year"
@@ -200,6 +215,7 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
                     value={formik.values.year}
                     label="Year *"
                     MenuProps={MenuProps}
+                    error={Boolean(formik.errors.year)}
                   >
                     {years()
                       .reverse()
@@ -213,7 +229,15 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
               </Grid>
             </Grid>
             <div className="text-center">
-              <CustomButton type="submit">Continue</CustomButton>
+              <CustomButton
+                type="submit"
+                disabled={
+                  Object.values(formik.values).every(v => v.length === 0) ||
+                  Object.keys(formik.errors).length > 0
+                }
+              >
+                Continue
+              </CustomButton>
             </div>
           </form>
         </DialogContent>
@@ -227,11 +251,6 @@ function SignupModal({ show, onHide, result }: ISignUpModal) {
       />
     </>
   );
-}
+};
 
-function mapStateToProps(state: any) {
-  const { auth } = state;
-  return { result: auth };
-}
-
-export default connect(mapStateToProps)(SignupModal);
+export default SignupModal;

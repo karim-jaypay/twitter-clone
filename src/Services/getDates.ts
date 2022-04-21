@@ -1,8 +1,8 @@
-const days = [] as Number[];
+const days = [] as String[];
 
 for (let i = 1; i < 32; i++)
-  if (i < 10) days.push(0 + i);
-  else days.push(i);
+  if (i < 10) days.push("0" + i);
+  else days.push(i.toString());
 
 const years = () => {
   const year = new Date().getFullYear();

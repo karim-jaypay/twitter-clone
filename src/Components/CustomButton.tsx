@@ -8,9 +8,17 @@ interface IButton {
   onClick?: React.MouseEventHandler;
   sx?: any;
   type?: "button" | "submit" | "reset" | undefined;
+  disabled?: boolean;
 }
 
-const CustomButton = ({ variant, children, onClick, sx, type }: IButton) => {
+const CustomButton = ({
+  variant,
+  children,
+  onClick,
+  sx,
+  type,
+  disabled,
+}: IButton) => {
   const CButton = styled(Button)(`
     font-weight: bold;
     width: 400px;
@@ -28,6 +36,7 @@ const CustomButton = ({ variant, children, onClick, sx, type }: IButton) => {
       sx={sx}
       variant={variant ? variant : "contained"}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </CButton>
