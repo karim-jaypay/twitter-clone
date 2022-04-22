@@ -47,13 +47,13 @@ export const createUser = async (req, res) => {
             token: token,
           });
           // send activation email to user
-          /* await sendMail.send(
+          await sendMail.send(
             signupTemplate({
               name: register.name,
               email: register.email,
               activationCode: token,
             })
-          ); */
+          );
           return res.status(200).json({
             code: "activation",
             message: "Another activation code has been sent to your email!",
@@ -181,6 +181,13 @@ export const activateUser = async (req, res) => {
           }
         }
       );
+      await AccountsActivation.findOneAndDelete({
+        user_id: user_id,
+      });
+    } else {
+      return res
+        .status(404)
+        .send("Sorry, your account can't be activated at the moment!");
     }
   } catch (error) {
     res.status(409).send(error.message);

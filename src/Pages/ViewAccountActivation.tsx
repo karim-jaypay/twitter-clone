@@ -14,7 +14,10 @@ const ViewAccountActivation = () => {
   const activate = async () => {
     const token = activation_code?.split("-X-X-")[0];
     const user_id = activation_code?.split("-X-X-")[1];
-    await activateUser({ user_id: user_id, token: token });
+    await activateUser({
+      user_id: user_id,
+      token: activation_code ?? undefined,
+    });
   };
 
   useEffect(() => {
