@@ -29,22 +29,13 @@ import CustomAlert from "../Alert";
 interface ISignUpModal {
   show: boolean;
   onHide: () => void;
-  result?: any;
 }
 
-const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
+const SignupModal = ({ show, onHide }: ISignUpModal) => {
   const [addUser, { data, error }] = useFirstSignUpMutation();
 
   // second sign up modal
   const [showModal, setShowModal] = useState(false);
-
-  const [email_err, setEmail_err] = useState(false);
-
-  useEffect(() => {
-    if (result?.error) {
-      setEmail_err(true);
-    }
-  }, [result]);
 
   useEffect(() => {
     if (data) {
@@ -67,11 +58,6 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
     delete copyValues.day;
 
     await addUser(copyValues);
-
-    /*  if (email_err !== true) {
-      setShowModal(true);
-      setModal(false);
-    } */
   };
   const formik = useFormik({
     initialValues: {
@@ -155,16 +141,9 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
               label="Email"
               style={{ marginBottom: "3%" }}
               value={formik.values.email}
-              onChange={(e) => {
-                formik.handleChange(e);
-                setEmail_err(false);
-              }}
-              error={Boolean(formik.errors.email) || email_err}
-              helperText={
-                formik.errors.email
-                  ? "Email Required"
-                  : email_err && "Email already taken"
-              }
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.email)}
+              helperText={formik.errors.email && "Email Required"}
             />
 
             <h2>Date of birth</h2>
