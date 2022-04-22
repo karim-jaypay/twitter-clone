@@ -3,12 +3,14 @@ import { Alert, AlertColor, AlertTitle } from "@mui/material";
 interface ICustomAlert {
   severity?: AlertColor;
   children?: any;
+  action?: any;
 }
 
-const CustomAlert = ({ severity, children }: ICustomAlert) => {
+const CustomAlert = ({ severity, children, action }: ICustomAlert) => {
   return (
     <Alert
       severity={severity}
+      action={action}
       style={{
         position: "fixed",
         top: 15,

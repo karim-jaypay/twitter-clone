@@ -35,6 +35,7 @@ const User = mongoose.Schema({
   },
   active: {
     type: Number,
+    default: 0,
   },
   picture: {
     type: String,

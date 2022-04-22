@@ -7,3 +7,8 @@ export const signupSchema = yup.object().shape({
   month: yup.string().required(),
   year: yup.number().required(),
 });
+
+export const secondSignupSchema = yup.object().shape({
+  username: yup.string().required("Invalid username"),
+  password: yup.string().required("Required"),
+});

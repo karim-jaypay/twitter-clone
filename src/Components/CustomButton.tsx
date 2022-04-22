@@ -3,6 +3,7 @@ import { styled } from "@mui/system";
 import React, { ReactNode } from "react";
 
 interface IButton {
+  className?: string;
   variant?: "text" | "outlined" | "contained" | undefined;
   children: ReactNode;
   onClick?: React.MouseEventHandler;
@@ -12,6 +13,7 @@ interface IButton {
 }
 
 const CustomButton = ({
+  className,
   variant,
   children,
   onClick,
@@ -29,9 +31,11 @@ const CustomButton = ({
     } !important;
     color: ${variant ? "rgb(29, 155, 240)" : "white"};
     border: ${variant && "1px solid rgb(207, 217, 222)"};
+    opacity: ${disabled && "0.6"};
     `);
   return (
     <CButton
+      className={className}
       type={type}
       sx={sx}
       variant={variant ? variant : "contained"}

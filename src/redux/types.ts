@@ -5,3 +5,9 @@ export interface IFirstSignup {
   day: number;
   month: number;
 }
+
+export interface ISecondSignup {
+  username: string;
+  email: string;
+  password: string;
+}

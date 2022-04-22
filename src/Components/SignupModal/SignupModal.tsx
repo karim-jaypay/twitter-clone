@@ -48,8 +48,9 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
 
   useEffect(() => {
     if (data) {
-      setShowModal(true);
+      formik.resetForm();
       onHide();
+      !data?.code && setShowModal(true);
     }
   }, [data]);
 
@@ -81,7 +82,7 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
       year: "",
     },
     validationSchema: signupSchema,
-    onSubmit: values => add_user(values),
+    onSubmit: (values) => add_user(values),
   });
 
   // Mui select dropdown style
@@ -97,6 +98,9 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
   return (
     <>
       {error?.data && <CustomAlert severity="error">{error?.data}</CustomAlert>}
+      {data?.code && (
+        <CustomAlert severity="success">{data?.message}</CustomAlert>
+      )}
       <Dialog
         open={show}
         onBackdropClick={() => {
@@ -151,7 +155,7 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
               label="Email"
               style={{ marginBottom: "3%" }}
               value={formik.values.email}
-              onChange={e => {
+              onChange={(e) => {
                 formik.handleChange(e);
                 setEmail_err(false);
               }}
@@ -179,7 +183,7 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
                     onChange={formik.handleChange}
                     error={Boolean(formik.errors.month)}
                   >
-                    {months.map(month => (
+                    {months.map((month) => (
                       <MenuItem key={month} value={month}>
                         {month}
                       </MenuItem>
@@ -232,7 +236,7 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
               <CustomButton
                 type="submit"
                 disabled={
-                  Object.values(formik.values).every(v => v.length === 0) ||
+                  Object.values(formik.values).every((v) => v.length === 0) ||
                   Object.keys(formik.errors).length > 0
                 }
               >
@@ -247,7 +251,7 @@ const SignupModal = ({ show, onHide, result }: ISignUpModal) => {
         onHide={() => {
           setShowModal(false);
         }}
-        data={result?.user}
+        data={data}
       />
     </>
   );
