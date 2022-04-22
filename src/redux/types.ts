@@ -11,3 +11,8 @@ export interface ISecondSignup {
   email: string;
   password: string;
 }
+
+export interface IActivateUser {
+  user_id?: string;
+  token?: string;
+}

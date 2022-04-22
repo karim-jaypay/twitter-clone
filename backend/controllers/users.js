@@ -40,7 +40,8 @@ export const createUser = async (req, res) => {
           return res.status(404).send("Account already created");
         } else {
           // create token
-          const token = crypto.randomBytes(48).toString("hex");
+          const token =
+            crypto.randomBytes(48).toString("hex") + "-X-X-" + register._id;
           // overwrite the token in accountActivation model
           await AccountsActivation.findByIdAndUpdate(register._id, {
             token: token,
@@ -109,7 +110,8 @@ export const secregisterUser = async (req, res) => {
       getUserByMail.save();
 
       // fill user id and token in collection
-      const token = crypto.randomBytes(48).toString("hex");
+      const token =
+        crypto.randomBytes(48).toString("hex") + "-X-X-" + getUserByMail._id;
       const sendActivationToken = await AccountsActivation.findOne({
         user_id: getUserByMail._id,
       });
@@ -131,6 +133,7 @@ export const secregisterUser = async (req, res) => {
           activationCode: token,
         })
       );
+      delete getUserByMail.password;
       return res.status(200).json(getUserByMail);
     }
 
@@ -150,7 +153,36 @@ export const secregisterUser = async (req, res) => {
     //    // res.send({ success: true, token });
     //   }
   } catch (error) {
-    // try
+    res.status(409).send(error.message);
+  }
+};
+
+export const activateUser = async (req, res) => {
+  const { user_id, token } = req.body;
+
+  try {
+    // check token
+    const checkToken = await AccountsActivation.findOne({ user_id: user_id });
+
+    if (!checkToken) return res.status(404).send("User not found");
+
+    if (checkToken.token === token) {
+      // set user to active
+      await UserMessage.findById(
+        checkToken.user_id,
+        function (error, userInfo) {
+          if (userInfo.active === 1) {
+            return res.status(404).send("Account already activated");
+          } else {
+            userInfo.active = 1;
+            userInfo.save();
+            delete userInfo.password;
+            return res.status(200).json(userInfo);
+          }
+        }
+      );
+    }
+  } catch (error) {
     res.status(409).send(error.message);
   }
 };

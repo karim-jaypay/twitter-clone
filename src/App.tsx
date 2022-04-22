@@ -20,6 +20,7 @@ import RequireAuth from "./Components/RequireAuth";
 
 import Welcome from "./Pages/ViewWelcome";
 import Login from "./Pages/ViewLogin";
+import ViewAccountActivation from "./Pages/ViewAccountActivation";
 
 //const Welcome = lazy(() => import("./Pages/ViewWelcome"));
 //const Login = lazy(() => import("./Pages/ViewLogin"));
@@ -97,6 +98,7 @@ export default function App() {
       <Routes>
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/activate" element={<ViewAccountActivation />} />
 
         <Route path="/" element={<Navigate replace to="/welcome" />} />
         <Route

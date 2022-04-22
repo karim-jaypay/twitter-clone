@@ -1,4 +1,4 @@
-import { IFirstSignup, ISecondSignup } from "./../types";
+import { IFirstSignup, ISecondSignup, IActivateUser } from "./../types";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { BaseQuery } from "../utils";
 
@@ -23,9 +23,21 @@ export const AuthApi = createApi({
         body: data,
       }),
     }),
+    // activate user
+    activateUser: builder.mutation<any, IActivateUser>({
+      query: (data) => ({
+        url: `register/activate`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useFirstSignUpMutation, useSecondSignUpMutation } = AuthApi;
+export const {
+  useFirstSignUpMutation,
+  useSecondSignUpMutation,
+  useActivateUserMutation,
+} = AuthApi;

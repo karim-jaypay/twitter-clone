@@ -14,7 +14,7 @@ export const signupTemplate = ({ name, email, activationCode }) => {
     <br/>
     <p>To confirm your email please kindly click the verification link below.</p>
     <br/>
-    <a href="${process.env.BACKEND_URL}activate?activation_code=${activationCode}">${process.env.BACKEND_URL}activate?activation_code=${activationCode}</a>
+    <a href="${process.env.FRONTEND_URL}activate?activation_code=${activationCode}">${process.env.BACKEND_URL}activate?activation_code=${activationCode}</a>
     <br/>
     <p>Cheers,</p>
     <br/>
