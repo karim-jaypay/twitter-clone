@@ -1,4 +1,4 @@
-import UserMessage from "../models/UserMessage.js";
+import User from "../models/User.js";
 import AccountsActivation from "../models/accountsActivation.js";
 
 import { sendMail, signupTemplate } from "../helpers/sendgrid.js";
@@ -8,7 +8,20 @@ import JoiDate from "@joi/date";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-import { getToken, COOKIE_OPTIONS, getRefreshToken } from "../authenticate.js";
+import { getToken, COOKIE_OPTIONS } from "../authenticate.js";
+
+/*-- function to encode user info --*/
+import { Buffer } from "buffer";
+const key = Buffer.from(process.env.EN_KEY, "base64");
+
+function encrypt(text) {
+  const iv = crypto.randomBytes(16);
+  let cipher = crypto.createCipheriv("AES-128-CBC", key, iv);
+  let encrypted = cipher.update(JSON.stringify(text));
+  encrypted = Buffer.concat([iv, encrypted, cipher.final()]);
+  return encrypted.toString("hex");
+}
+/*---------------------------------*/
 
 const Joi = JoiBase.extend(JoiDate);
 
@@ -23,10 +36,10 @@ export const createUser = async (req, res) => {
 
   if (error) return res.status(400).send(error.details[0].message);
   let user = req.body;
-  const newUser = new UserMessage(user);
+  const newUser = new User(user);
 
   try {
-    const register = await UserMessage.findOne({ email: user.email });
+    const register = await User.findOne({ email: user.email });
     // if user registers for first time
     if (!register) {
       newUser.save();
@@ -69,7 +82,7 @@ export const createUser = async (req, res) => {
       return res.status(200).send(overwriteUserFields);
     }
   } catch (error) {
-    res.status(409).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
@@ -87,14 +100,14 @@ export const secregisterUser = async (req, res) => {
 
   try {
     // check if username is taken from another user
-    const checkUsernameIfTaken = await UserMessage.findOne({
+    const checkUsernameIfTaken = await User.findOne({
       username: userFromBody.username,
     });
     if (checkUsernameIfTaken)
       return res.status(404).send("Username already taken");
 
     // get user by email and update his fields
-    const getUserByMail = await UserMessage.findOne({
+    const getUserByMail = await User.findOne({
       email: userFromBody.email,
     });
     if (!getUserByMail) {
@@ -136,24 +149,8 @@ export const secregisterUser = async (req, res) => {
       delete getUserByMail.password;
       return res.status(200).json(getUserByMail);
     }
-
-    // const token = getToken({ _id: user._id });
-    // const refreshToken = getRefreshToken({ _id: user._id });
-
-    // user.refreshToken.push({ refreshToken });
-
-    // now update it in MongoDB
-
-    // user.save((err, user) => {
-    //   if (err) {
-    //     res.statusCode = 500;
-    //     res.send(err);
-    //   } else {
-    //    // res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
-    //    // res.send({ success: true, token });
-    //   }
   } catch (error) {
-    res.status(409).send(error.message);
+    res.status(500).send(error.message);
   }
 };
 
@@ -168,19 +165,16 @@ export const activateUser = async (req, res) => {
 
     if (checkToken.token === token) {
       // set user to active
-      await UserMessage.findById(
-        checkToken.user_id,
-        function (error, userInfo) {
-          if (userInfo.active === 1) {
-            return res.status(404).send("Account already activated");
-          } else {
-            userInfo.active = 1;
-            userInfo.save();
-            delete userInfo.password;
-            return res.status(200).json(userInfo);
-          }
+      await User.findById(checkToken.user_id, function (error, userInfo) {
+        if (userInfo.active === 1) {
+          return res.status(404).send("Account already activated");
+        } else {
+          userInfo.active = 1;
+          userInfo.save();
+          delete userInfo.password;
+          return res.status(200).json(userInfo);
         }
-      );
+      });
       await AccountsActivation.findOneAndDelete({
         user_id: user_id,
       });
@@ -190,7 +184,60 @@ export const activateUser = async (req, res) => {
         .send("Sorry, your account can't be activated at the moment!");
     }
   } catch (error) {
-    res.status(409).send(error.message);
+    res.status(500).send(error.message);
+  }
+};
+
+export const Login = async (req, res, next) => {
+  const { username, password } = req.body;
+  try {
+    // check if user is available, active and has entered the correct credentials
+    const checkUserExists = await User.findOne({ username: username });
+    if (!checkUserExists) {
+      res.status(404).send({ message: "Incorrect username or password" });
+    }
+    const checkPassword = await bcrypt.compare(
+      password,
+      checkUserExists?.password
+    );
+    if (checkPassword) {
+      const token = getToken({ _id: checkUserExists._id });
+      res.status(200).send({ accessToken: token });
+    }
+    //passport.authenticate("jwt", function (err, user, info) {
+    // console.log({ err: err, info: info, user: user });
+    /*-- if error --*/
+    // if (err) {
+    //  return next(err);
+    //}
+    /*-- if email or pass incorrect --*/
+    // if (info) {
+    //   res.status(500).send({ message: info });
+    // }
+
+    /* if (user) {
+        const token = getToken({ _id: user._id });
+        const refreshToken = getRefreshToken({ _id: user._id });
+
+        user.refreshToken.push({ refreshToken });
+
+        user.save((err, user) => {
+          if (err) {
+            res.status(500).send(err);
+          } else {
+            const userInfo = user.toObject();
+            delete userInfo.password;
+            Object.assign(userInfo, { token: token });
+            const data = encrypt(userInfo);
+            res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
+            res.status(200).send({ data });
+          }
+        });
+      } */
+    //});
+    //}
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 };
 
@@ -200,10 +247,10 @@ export const Logout = async (req, res) => {
   const { refreshToken } = signedCookies;
 
   try {
-    await UserMessage.findById(req.user._id).then(
-      (user) => {
+    await User.findById(req.user._id).then(
+      user => {
         const tokenIndex = user.refreshToken.findIndex(
-          (item) => item.refreshToken === refreshToken
+          item => item.refreshToken === refreshToken
         );
 
         if (tokenIndex !== -1) {
@@ -220,7 +267,7 @@ export const Logout = async (req, res) => {
           }
         });
       },
-      (err) => console.log(err)
+      err => console.log(err)
     );
   } catch (err) {
     console.log(err);

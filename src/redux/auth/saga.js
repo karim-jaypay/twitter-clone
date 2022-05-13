@@ -20,8 +20,8 @@ const loginWithEmailPasswordAsync = async (email, password) =>
     password,
     withCredentials: true,
   })
-    .then((res) => res.data)
-    .catch((error) => error.response.data);
+    .then(res => res.data)
+    .catch(error => error.response.data);
 
 function* loginWithEmailPassword({ payload }) {
   const { email, password, history } = payload;
@@ -37,34 +37,4 @@ function* loginWithEmailPassword({ payload }) {
   } catch (error) {
     yield put(loginUserError(error));
   }
-}
-
-/* REGISTER */
-
-const registerAsync = async (info) => {
-  const month = moment().month(info.month).format("MM");
-  return await ClientAPI.post("register/create", {
-    name: info.name,
-    email: info.email,
-    birth: info.year + "/" + month + "/" + info.day,
-  });
-};
-
-function* registerFirstStep({ payload }) {
-  const data = payload;
-  try {
-    const register = yield call(registerAsync, data);
-    if (!register.error) {
-      yield put(registerUserFirstStep(register.data));
-    } else yield put(registerUserFirstStepError(register.error));
-  } catch (error) {
-    yield yield put(registerUserFirstStepError(error));
-  }
-}
-
-export default function* authSaga() {
-  yield all([
-    takeLatest(LOGIN_USER, loginWithEmailPassword),
-    takeLatest(REGISTER_USER_FIRST_STEP, registerFirstStep),
-  ]);
 }

@@ -10,7 +10,7 @@ import image from "../../../public/image.svg";
 import gif from "../../../public/gif.svg";
 import poll from "../../../public/poll.svg";
 import emoji from "../../../public/happy.svg";
-import { commenttweet } from "../../../redux/actions";
+//import { commenttweet } from "../../../redux/actions";
 
 export default function CommentModal() {
   // const {show, tweetId, tweetName, tweetUsername, tweetDate, tweet, onHide, history, changeCommentCount} = props

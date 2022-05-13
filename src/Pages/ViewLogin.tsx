@@ -3,15 +3,16 @@ import { Link } from "react-router-dom";
 import { Grid, TextField } from "@mui/material";
 
 import { useSelector, useDispatch } from "react-redux";
-import { loginUser } from "../redux/auth/actions";
+//import { loginUser } from "../redux/auth/actions";
 
 import "../Styles/login.scss";
 
 import logo from "../public/logo.png";
 import CustomButton from "../Components/CustomButton";
+import { useAppDispatch } from "../redux/hooks";
 
 export default function Login() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +31,7 @@ export default function Login() {
           sx={{ marginBottom: 3 }}
           label="Email, or Username"
           variant="outlined"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
         />
 
         <TextField
@@ -38,7 +39,7 @@ export default function Login() {
           label="Password"
           variant="outlined"
           type="password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
         />
 
         {result?.message && result.message !== "success" && (

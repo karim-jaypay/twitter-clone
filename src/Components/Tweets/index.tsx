@@ -9,7 +9,7 @@ import {
 } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 
-import { liketweet } from "../../redux/actions";
+//import { liketweet } from "../../redux/actions";
 
 import CommentModal from "../Modals/CommentModal";
 

@@ -16,3 +16,8 @@ export interface IActivateUser {
   user_id?: string;
   token?: string;
 }
+
+export interface ILogin {
+  username: string;
+  password: string;
+}

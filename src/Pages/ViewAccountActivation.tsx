@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useActivateUserMutation } from "../redux/auth";
 
 const ViewAccountActivation = () => {
-  const navigate = useNavigate();
   // get token from params
   let search = window.location.search;
   let params = new URLSearchParams(search);
@@ -12,7 +11,6 @@ const ViewAccountActivation = () => {
   const [activateUser, { data, error }] = useActivateUserMutation();
 
   const activate = async () => {
-    const token = activation_code?.split("-X-X-")[0];
     const user_id = activation_code?.split("-X-X-")[1];
     await activateUser({
       user_id: user_id,

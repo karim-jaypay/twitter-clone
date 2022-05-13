@@ -8,7 +8,7 @@ import gif from "../public/gif.svg";
 import poll from "../public/poll.svg";
 import emoji from "../public/happy.svg";
 
-import { createTweet, gettweets } from "../redux/actions";
+//import { createTweet, gettweets } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 
 import Tweets from "../Components/Tweets";

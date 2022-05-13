@@ -1,5 +1,4 @@
 import express from "express";
-import passport from "passport";
 import jwt from "jsonwebtoken";
 
 import {
@@ -7,9 +6,10 @@ import {
   secregisterUser,
   Logout,
   activateUser,
-} from "../controllers/users.js";
+  Login,
+} from "../controllers/usersController.js";
 
-import UserMessage from "../models/UserMessage.js";
+import User from "../models/User.js";
 
 import {
   getToken,
@@ -45,101 +45,65 @@ router.post("/update", secregisterUser);
 /*-- activate user --*/
 router.post("/activate", activateUser);
 
-/*-- login with passport local and passport jwt integration --*/
-router.post("/login", function (req, res, next) {
-  passport.authenticate("local", function (err, user, info) {
-    /*-- if error --*/
-    if (err) {
-      return next(err);
-    }
-    /*-- if email or pass incorrect --*/
-    if (info) {
-      res.statusCode = 500;
-      res.send({ message: info });
-    }
-
-    if (user) {
-      const token = getToken({ _id: user._id });
-      const refreshToken = getRefreshToken({ _id: user._id });
-
-      user.refreshToken.push({ refreshToken });
-
-      user.save((err, user) => {
-        if (err) {
-          res.statusCode = 500;
-          res.send(err);
-        } else {
-          const userInfo = user.toObject();
-          delete userInfo.password;
-          Object.assign(userInfo, { token: token });
-          const data = encrypt(userInfo);
-          res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS);
-          res.send({ success: true, data });
-        }
-      });
-    }
-  })(req, res, next);
-});
-
 /*-- refresh token api --*/
-router.post("/refreshToken", (req, res, next) => {
-  /*-- retrieve refresh token from signed cookies --*/
-  const { signedCookies = {} } = req;
-  const { refreshToken } = signedCookies;
+// router.post("/refreshToken", (req, res, next) => {
+//   /*-- retrieve refresh token from signed cookies --*/
+//   const { signedCookies = {} } = req;
+//   const { refreshToken } = signedCookies;
 
-  if (refreshToken) {
-    try {
-      /*-- we verify the refresh token against the secret used to create the token and extract payload--*/
-      const payload = jwt.verify(
-        refreshToken,
-        process.env.REFRESH_TOKEN_SECRET
-      );
-      const userId = payload._id;
+//   if (refreshToken) {
+//     try {
+//       /*-- we verify the refresh token against the secret used to create the token and extract payload--*/
+//       const payload = jwt.verify(
+//         refreshToken,
+//         process.env.REFRESH_TOKEN_SECRET
+//       );
+//       const userId = payload._id;
 
-      UserMessage.findOne({ _id: userId }).then(
-        (user) => {
-          if (user) {
-            // Find the refresh token against the user record in database
-            const tokenIndex = user.refreshToken.findIndex(
-              (item) => item.refreshToken === refreshToken
-            );
+//       User.findOne({ _id: userId }).then(
+//         user => {
+//           if (user) {
+//             // Find the refresh token against the user record in database
+//             const tokenIndex = user.refreshToken.findIndex(
+//               item => item.refreshToken === refreshToken
+//             );
 
-            if (tokenIndex === -1) {
-              res.statusCode = 401;
-              res.send("Unauthorized, token not found");
-            } else {
-              const token = getToken({ _id: userId });
-              // If the refresh token exists, then create new one and replace it.
-              const newRefreshToken = getRefreshToken({ _id: userId });
-              user.refreshToken[tokenIndex] = { refreshToken: newRefreshToken };
+//             if (tokenIndex === -1) {
+//               res.statusCode = 401;
+//               res.send("Unauthorized, token not found");
+//             } else {
+//               const token = getToken({ _id: userId });
+//               // If the refresh token exists, then create new one and replace it.
+//               const newRefreshToken = getRefreshToken({ _id: userId });
+//               user.refreshToken[tokenIndex] = { refreshToken: newRefreshToken };
 
-              user.save((err, user) => {
-                if (err) {
-                  res.statusCode = 500;
-                  res.send(err);
-                } else {
-                  const userInfo = user.toObject();
-                  delete userInfo.password;
-                  Object.assign(userInfo, { token: token });
-                  const data = encrypt(userInfo);
-                  res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS);
-                  res.send({ success: true, data });
-                }
-              });
-            }
-          } else {
-            res.statusCode = 401;
-            res.send("Unauthorized, user not found");
-          }
-        },
-        (err) => next(err)
-      );
-    } catch (err) {
-      res.statusCode = 401;
-      res.send("Unauthorized," + err);
-    }
-  }
-});
+//               user.save((err, user) => {
+//                 if (err) {
+//                   res.statusCode = 500;
+//                   res.send(err);
+//                 } else {
+//                   const userInfo = user.toObject();
+//                   delete userInfo.password;
+//                   Object.assign(userInfo, { token: token });
+//                   const data = encrypt(userInfo);
+//                   res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS);
+//                   res.send({ success: true, data });
+//                 }
+//               });
+//             }
+//           } else {
+//             res.statusCode = 401;
+//             res.send("Unauthorized, user not found");
+//           }
+//         },
+//         err => next(err)
+//       );
+//     } catch (err) {
+//       res.statusCode = 401;
+//       res.send("Unauthorized," + err);
+//     }
+//   }
+// });
 
 /*-- logout user --*/
 router.get("/logout", verifyUser, Logout);
